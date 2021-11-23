@@ -87,7 +87,10 @@ def render(board):
         'wK': [[0,-1],[0,-2],[1,-1],[-1,-1]],
     }
     time.sleep(0.1)
-    os.system('clear')
+    if os.name == 'nt':
+        os.system('cls')
+    else:
+        os.system('cls')
     for i in range(8):
         for j in range(8):
             item = LUT[board[i][j]]
