@@ -19,13 +19,37 @@ def keyInput(key):
 def onPress(key):
     keyInput(key)
     render(board)
+positions = []
 
 def selectOrMove():
     global selectedPos
     global turn
     global board
+    global positions
     if board[cursorPos[0]][cursorPos[1]][0] == turn:
         selectedPos = cursorPos.copy()
+        #if board[cursorPos[0]][cursorPos[1]][1] == 'R': #rook
+        if True:
+            print('yay')
+            positions = []
+            for i in range(7):
+                if board[selectedPos[0],selectedPos[1+i]][0] != turn or board[selectedPos[0]][selectedPos[1+i]] == '-':
+                    print([selectedPos[0],selectedPos[1+i]]+'whooot')
+                    positions += [selectedPos[0],selectedPos[1+i]]
+                else: break
+            for i in range(7):
+                if board[selectedPos[0],selectedPos[1-i]][0] != turn or board[selectedPos[0],selectedPos[1+i]] == '-':
+                    positions += [selectedPos[0],selectedPos[1+i]]
+                else: break
+            for i in range(7):
+                if board[selectedPos[0+i],selectedPos[1]][0] != turn or board[selectedPos[0],selectedPos[1+i]] == '-':
+                    positions += [selectedPos[0],selectedPos[1+i]]
+                else: break
+            for i in range(7): 
+                if board[selectedPos[0-i],selectedPos[1]][0] != turn or board[selectedPos[0],selectedPos[1+i]] == '-':
+                    positions += [selectedPos[0],selectedPos[1+i]]
+                else: break
+            print(positions + 'WHAT')
     elif selectedPos != [-1,-1]:
         board[cursorPos[0]][cursorPos[1]] = board[selectedPos[0]][selectedPos[1]]
         board[selectedPos[0]][selectedPos[1]] = '-'
@@ -51,7 +75,7 @@ def color(string, color=''):
 
 def render(board):
     global selectedPos
-
+    global positions
     global movablePos
     LUT = {
         'bP': '♙ ',
@@ -103,7 +127,8 @@ def render(board):
             movablePos[0] = selectedPos[0] - i
 
             movablePos[1] = selectedPos[1] - j
-            if selectedPos != [-1,-1] and movablePos in MoveLut[board[selectedPos[0]][selectedPos[1]]]:
+            #if selectedPos != [-1,-1] and movablePos in MoveLut[board[selectedPos[0]][selectedPos[1]]]:
+            if selectedPos != [-1,-1] and movablePos in positions:
                 item = color(item, 'lightMove') #Movable
             if (i+j) % 2 == 0:
                 item = color(item, 'white')
@@ -113,8 +138,8 @@ def render(board):
 board = [['bR', 'bN', 'bB', 'bQ', 'bK', 'bB', 'bN', 'bR'],
          ['bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP'],
          ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
-         ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
-         ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
+         ['-',  '-',  'wR',  '-',  '-',  '-',  '-',  '-' ],
+         ['-',  '-',  '-',  '-',  'bR',  '-',  '-',  '-' ],
          ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
          ['wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP'],
          ['wR', 'wN', 'wB', 'wQ', 'wK', 'wB', 'wN', 'wR']]
