@@ -31,32 +31,39 @@ def selectOrMove():
     global positions
     if board[cursorPos[0]][cursorPos[1]][0] == turn:
         selectedPos = cursorPos.copy()
-        #if board[cursorPos[0]][cursorPos[1]][1] == 'R': #rook
-        if True:
-            print('yay')
+        #===ROOK===#
+        if board[cursorPos[0]][cursorPos[1]][1] == 'R': 
             positions = []
+            print('very before')
             for i in range(1, 7, 1):
                 if board[selectedPos[0]][selectedPos[1]+i][0] != turn: #other color pices and spaces
-                    posToAdd = [-1,-1]
-                    posToAdd[0] = selectedPos[0]
-                    posToAdd[1] = selectedPos[1]+i
-                    positions.append(posToAdd)
+                    positions.append([selectedPos[0], selectedPos[1]+i])
                     if board[selectedPos[0]][selectedPos[1]+i][0] == opositeTurn(turn): #other color pices to stop moving after that
                         break
                 else: break
-                print(positions)
-            # for i in range(7):
-            #     if board[selectedPos[0],selectedPos[1-i]][0] != turn or board[selectedPos[0],selectedPos[1+i]] == '-':
-            #         positions += [selectedPos[0],selectedPos[1+i]]
+            print('before')
+            for i in range(1, 7, 1):
+                if board[selectedPos[0]][selectedPos[1]-i][0] != turn: #other color pices and spaces
+                    positions.append([selectedPos[0], selectedPos[1]-i])
+                    if board[selectedPos[0]][selectedPos[1]-i][0] == opositeTurn(turn): #other color pices to stop moving after that
+                        break
+                else: break
+            print('after :)')
+            # for i in range(1, 7, 1):
+            #     if board[selectedPos[0]+i][selectedPos[1]][0] != turn: #other color pices and spaces
+            #         positions.append([selectedPos[0]+i, selectedPos[1]])
+            #         if board[selectedPos[0]+i][selectedPos[1]][0] == opositeTurn(turn): #other color pices to stop moving after that
+            #             break
             #     else: break
-            # for i in range(7):
-            #     if board[selectedPos[0+i],selectedPos[1]][0] != turn or board[selectedPos[0],selectedPos[1+i]] == '-':
-            #         positions += [selectedPos[0],selectedPos[1+i]]
+            
+            # for i in range(1, 7, 1):
+            #     if board[selectedPos[0]-i][selectedPos[1]][0] != turn: #other color pices and spaces
+            #         positions.append([selectedPos[0]-i, selectedPos[1]])
+            #         if board[selectedPos[0]-i][selectedPos[1]][0] == opositeTurn(turn): #other color pices to stop moving after that
+            #             break
             #     else: break
-            # for i in range(7): 
-            #     if board[selectedPos[0-i],selectedPos[1]][0] != turn or board[selectedPos[0],selectedPos[1+i]] == '-':
-            #         positions += [selectedPos[0],selectedPos[1+i]]
-            #     else: break
+            print(positions)
+            
     elif selectedPos != [-1,-1]:
         board[cursorPos[0]][cursorPos[1]] = board[selectedPos[0]][selectedPos[1]]
         board[selectedPos[0]][selectedPos[1]] = '-'
@@ -113,7 +120,7 @@ def render(board):
         'wQ': [[0,-1],[0,-2],[0,-3],[0,-4],[0,-5],[0,-6],[0,-7],[0,1],[0,2],[0,3],[0,4],[0,5],[0,6],[0,7],[-1,0],[-2,0],[-3,0],[-4,0],[-5,0],[-6,0],[-7,0],[1,0],[2,0],[3,0],[4,0],[5,0],[6,0],[7,0],[1,1],[2,2],[3,3],[4,4],[5,5],[6,6],[7,7],[-1,1],[-2,2],[-3,3],[-4,4],[-5,5],[-6,6],[-7,7],[1,-1],[2,-2],[3,-3],[4,-4],[5,-5],[6,-6],[7,-7],[-1,-1],[-2,-2],[-3,-3],[-4,-4],[-5,-5],[-6,-6],[-7,-7]],
         'wK': [[-1,0],[1,0],[0,1],[0,-1],[1,-1],[-1,-1],[-1,1],[1,1]],
     }
-    time.sleep(0.1)
+    # #time.sleep(0.01)
     # if os.name == 'nt':
     #     os.system('cls')
     # else:
