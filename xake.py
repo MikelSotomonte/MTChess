@@ -18,7 +18,6 @@ def keyInput(key):
 def onPress(key):
     keyInput(key)
     render(board)
-positions = []
 
 def selectOrMove():
     global selectedPos
@@ -144,5 +143,6 @@ cursorPos = [4,4]
 selectedPos = [-1,-1]
 movablePos = [-1,-1]
 turn = 'w'
+positions = []
 with Listener(on_press=onPress) as l:
     l.join()
