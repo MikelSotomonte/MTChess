@@ -19,6 +19,11 @@ def onPress(key):
     keyInput(key)
     render(board)
 
+def opositeTurn(turn):
+    if turn == 'w': turn = 'b'
+    else: turn = 'w'
+    return turn
+
 def selectOrMove():
     global selectedPos
     global turn
@@ -30,30 +35,33 @@ def selectOrMove():
         if True:
             print('yay')
             positions = []
-            for i in range(7):
-                if board[selectedPos[0],selectedPos[1+i]][0] != turn or board[selectedPos[0]][selectedPos[1+i]] == '-':
-                    print([selectedPos[0],selectedPos[1+i]]+'whooot')
-                    positions += [selectedPos[0],selectedPos[1+i]]
+            for i in range(1, 7, 1):
+                if board[selectedPos[0]][selectedPos[1]+i][0] != turn: #other color pices and spaces
+                    posToAdd = [-1,-1]
+                    posToAdd[0] = selectedPos[0]
+                    posToAdd[1] = selectedPos[1]+i
+                    positions.append(posToAdd)
+                    if board[selectedPos[0]][selectedPos[1]+i][0] == opositeTurn(turn): #other color pices to stop moving after that
+                        break
                 else: break
-            for i in range(7):
-                if board[selectedPos[0],selectedPos[1-i]][0] != turn or board[selectedPos[0],selectedPos[1+i]] == '-':
-                    positions += [selectedPos[0],selectedPos[1+i]]
-                else: break
-            for i in range(7):
-                if board[selectedPos[0+i],selectedPos[1]][0] != turn or board[selectedPos[0],selectedPos[1+i]] == '-':
-                    positions += [selectedPos[0],selectedPos[1+i]]
-                else: break
-            for i in range(7): 
-                if board[selectedPos[0-i],selectedPos[1]][0] != turn or board[selectedPos[0],selectedPos[1+i]] == '-':
-                    positions += [selectedPos[0],selectedPos[1+i]]
-                else: break
-            print(positions + 'WHAT')
+                print(positions)
+            # for i in range(7):
+            #     if board[selectedPos[0],selectedPos[1-i]][0] != turn or board[selectedPos[0],selectedPos[1+i]] == '-':
+            #         positions += [selectedPos[0],selectedPos[1+i]]
+            #     else: break
+            # for i in range(7):
+            #     if board[selectedPos[0+i],selectedPos[1]][0] != turn or board[selectedPos[0],selectedPos[1+i]] == '-':
+            #         positions += [selectedPos[0],selectedPos[1+i]]
+            #     else: break
+            # for i in range(7): 
+            #     if board[selectedPos[0-i],selectedPos[1]][0] != turn or board[selectedPos[0],selectedPos[1+i]] == '-':
+            #         positions += [selectedPos[0],selectedPos[1+i]]
+            #     else: break
     elif selectedPos != [-1,-1]:
         board[cursorPos[0]][cursorPos[1]] = board[selectedPos[0]][selectedPos[1]]
         board[selectedPos[0]][selectedPos[1]] = '-'
         selectedPos = [-1,-1]
-        if turn == 'w': turn = 'b'
-        else: turn = 'w' 
+        turn = opositeTurn(turn)
         
 def color(string, color=''):
         #https://stackabuse.com/how-to-print-colored-text-in-python/
@@ -106,10 +114,10 @@ def render(board):
         'wK': [[-1,0],[1,0],[0,1],[0,-1],[1,-1],[-1,-1],[-1,1],[1,1]],
     }
     time.sleep(0.1)
-    if os.name == 'nt':
-        os.system('cls')
-    else:
-        os.system('cls')
+    # if os.name == 'nt':
+    #     os.system('cls')
+    # else:
+    #     os.system('clear')
     for i in range(8):
         for j in range(8):
             item = LUT[board[i][j]]
@@ -119,11 +127,9 @@ def render(board):
                 item = color(item, 'green') # selected
             if i == cursorPos[0] and j == cursorPos[1]:
                 item = color(item, 'orange') # Cursor
-            movablePos[0] = selectedPos[0] - i
-
-            movablePos[1] = selectedPos[1] - j
+            
             #if selectedPos != [-1,-1] and movablePos in MoveLut[board[selectedPos[0]][selectedPos[1]]]:
-            if selectedPos != [-1,-1] and movablePos in positions:
+            if selectedPos != [-1,-1] and [i,j] in positions:
                 item = color(item, 'lightMove') #Movable
             if (i+j) % 2 == 0:
                 item = color(item, 'white')
