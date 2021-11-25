@@ -24,6 +24,18 @@ def opositeTurn(turn):
     else: turn = 'w'
     return turn
 
+#def checkMovements(a,b):
+  #  global selectedPos
+   # global board
+    #global turn
+    #global positions
+    #for i in range(1, 7, 1): #down
+     #   if board[selectedPos[a]+a*i][selectedPos[b]+b*i][0] != turn: #other color pices and spaces
+      #      positions.append([selectedPos[a]+a*i, selectedPos[b]+b*i])
+       #     if board[selectedPos[a]+a*i][selectedPos[b]+b*i][0] == opositeTurn(turn): #other color pices to stop moving after that
+        #        break
+        #else: break
+
 def selectOrMove():
     global selectedPos
     global turn
@@ -35,34 +47,17 @@ def selectOrMove():
         if board[cursorPos[0]][cursorPos[1]][1] == 'R': 
             positions = []
             print('very before')
-            for i in range(1, 7, 1):
+
+            for i in range(1, 7, 1):#right
                 if board[selectedPos[0]][selectedPos[1]+i][0] != turn: #other color pices and spaces
                     positions.append([selectedPos[0], selectedPos[1]+i])
                     if board[selectedPos[0]][selectedPos[1]+i][0] == opositeTurn(turn): #other color pices to stop moving after that
                         break
-                else: break
-            print('before')
-            for i in range(1, 7, 1):
-                if board[selectedPos[0]][selectedPos[1]-i][0] != turn: #other color pices and spaces
-                    positions.append([selectedPos[0], selectedPos[1]-i])
-                    if board[selectedPos[0]][selectedPos[1]-i][0] == opositeTurn(turn): #other color pices to stop moving after that
-                        break
-                else: break
-            print('after :)')
-            # for i in range(1, 7, 1):
-            #     if board[selectedPos[0]+i][selectedPos[1]][0] != turn: #other color pices and spaces
-            #         positions.append([selectedPos[0]+i, selectedPos[1]])
-            #         if board[selectedPos[0]+i][selectedPos[1]][0] == opositeTurn(turn): #other color pices to stop moving after that
-            #             break
-            #     else: break
-            
-            # for i in range(1, 7, 1):
-            #     if board[selectedPos[0]-i][selectedPos[1]][0] != turn: #other color pices and spaces
-            #         positions.append([selectedPos[0]-i, selectedPos[1]])
-            #         if board[selectedPos[0]-i][selectedPos[1]][0] == opositeTurn(turn): #other color pices to stop moving after that
-            #             break
-            #     else: break
-            print(positions)
+        #checkMovements(0,1)
+        #checkMovements(0,-1)
+        #checkMovements(1,0)
+        #checkMovements(-1,0)
+            #print(positions)
             
     elif selectedPos != [-1,-1]:
         board[cursorPos[0]][cursorPos[1]] = board[selectedPos[0]][selectedPos[1]]
