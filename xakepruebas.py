@@ -167,3 +167,15 @@ positions = []
 AtackPosition = []
 with Listener(on_press=onPress) as l:
     l.join()
+
+
+    '''debugMode = True
+    if debugMode == True:
+        print(debugMode)
+        try:
+            if str(key.char) == 'p':
+                print('worked')
+                if board[cursorPos[0]][cursorPos[1]][0] == 'b': 
+                    board[cursorPos[0]][cursorPos[1]] = 'wP'
+            else: board[cursorPos[0]][cursorPos[1]] = 'bP'
+        except: pass'''
