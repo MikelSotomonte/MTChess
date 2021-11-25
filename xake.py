@@ -19,12 +19,19 @@ def onPress(key):
     keyInput(key)
     render(board)
 
+def clearScreen():
+    time.sleep(0.05)
+    if os.name == 'nt':
+        os.system('cls')
+    else:
+        os.system('clear')
+
 def opositeTurn(turn):
     if turn == 'w': turn = 'b'
     else: turn = 'w'
     return turn
 
-def checkMovements(a,b):
+def movementsRaycast(a,b):
     global selectedPos
     global board
     global turn
@@ -49,19 +56,39 @@ def selectOrMove():
     global positions
     if board[cursorPos[0]][cursorPos[1]][0] == turn:
         selectedPos = cursorPos.copy()
-        if board[cursorPos[0]][cursorPos[1]][1] == 'R':
-            positions = []
-            checkMovements(1,0)
-            checkMovements(0,1)
-            checkMovements(-1,0)
-            checkMovements(0,-1)
+        positions = []
         #===ROOK===#
-        #checkMovements(0,1)
-        #checkMovements(0,-1)
-        #checkMovements(1,0)
-        #checkMovements(-1,0)
-            #print(positions)
-            
+        if board[cursorPos[0]][cursorPos[1]][1] == 'R':
+            movementsRaycast(1,0)
+            movementsRaycast(0,1)
+            movementsRaycast(-1,0)
+            movementsRaycast(0,-1)
+        #===BISHOP===#
+        if board[cursorPos[0]][cursorPos[1]][1] == 'B':
+            movementsRaycast(1,1)
+            movementsRaycast(-1,1)
+            movementsRaycast(1,-1)
+            movementsRaycast(-1,-1)
+        #===QWEEN===#
+        if board[cursorPos[0]][cursorPos[1]][1] == 'Q':
+            movementsRaycast(1,1)
+            movementsRaycast(-1,1)
+            movementsRaycast(1,-1)
+            movementsRaycast(-1,-1)
+            movementsRaycast(1,0)
+            movementsRaycast(0,1)
+            movementsRaycast(-1,0)
+            movementsRaycast(0,-1)
+        #===PAWN===#
+        if board[cursorPos[0]][cursorPos[1]][1] == 'P':
+            if turn == 'w':
+                if board[selectedPos[0]-1][selectedPos[1]][0] != turn:
+                    positions.append([selectedPos[0]-1,selectedPos[1]])
+                    if selectedPos[0] == 6 and board[4][selectedPos[1]][0] != turn: # can move two
+                        positions.append([4,selectedPos[1]])
+                #if selectedPos[]
+
+
     elif selectedPos != [-1,-1]:
         if [cursorPos[0],cursorPos[1]] in positions:
             board[cursorPos[0]][cursorPos[1]] = board[selectedPos[0]][selectedPos[1]]
@@ -120,11 +147,7 @@ def render(board):
         'wQ': [[0,-1],[0,-2],[0,-3],[0,-4],[0,-5],[0,-6],[0,-7],[0,1],[0,2],[0,3],[0,4],[0,5],[0,6],[0,7],[-1,0],[-2,0],[-3,0],[-4,0],[-5,0],[-6,0],[-7,0],[1,0],[2,0],[3,0],[4,0],[5,0],[6,0],[7,0],[1,1],[2,2],[3,3],[4,4],[5,5],[6,6],[7,7],[-1,1],[-2,2],[-3,3],[-4,4],[-5,5],[-6,6],[-7,7],[1,-1],[2,-2],[3,-3],[4,-4],[5,-5],[6,-6],[7,-7],[-1,-1],[-2,-2],[-3,-3],[-4,-4],[-5,-5],[-6,-6],[-7,-7]],
         'wK': [[-1,0],[1,0],[0,1],[0,-1],[1,-1],[-1,-1],[-1,1],[1,1]],
     }
-    time.sleep(0.05)
-    if os.name == 'nt':
-        os.system('cls')
-    else:
-        os.system('clear')
+    #clearScreen()
     for i in range(8):
         for j in range(8):
             item = LUT[board[i][j]]
