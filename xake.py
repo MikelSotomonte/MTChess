@@ -38,7 +38,7 @@ def movementsRaycast(a,b):
     global positions
     
     for i in range(1, 8, 1):
-        if selectedPos[1]+i*a <= 7 and selectedPos[1]+i*a >= 0 and selectedPos[1]+i*b <= 7 and  + selectedPos[1]+i*b >= 0:
+        if selectedPos[0]+i*a <= 7 and selectedPos[0]+i*a >= 0 and selectedPos[1]+i*b <= 7 and selectedPos[1]+i*b >= 0:
             if board[selectedPos[0]+i*a][selectedPos[1]+i*b][0] == '-': #spaces
                 positions.append([selectedPos[0]+i*a, selectedPos[1]+i*b])
             elif board[selectedPos[0]+i*a][selectedPos[1]+i*b][0] == turn: #same color pices
@@ -46,8 +46,6 @@ def movementsRaycast(a,b):
             elif board[selectedPos[0]+i*a][selectedPos[1]+i*b][0] == opositeTurn(turn): #other color pices to stop moving after that
                 positions.append([selectedPos[0]+i*a, selectedPos[1]+i*b])
                 break
-        else: break
-
 
 def selectOrMove():
     global selectedPos
@@ -180,11 +178,19 @@ def render(board):
 board = [['bR', 'bN', 'bB', 'bQ', 'bK', 'bB', 'bN', 'bR'],
          ['bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP'],
          ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
-         ['-',  '-',  'wR',  '-',  '-',  '-',  '-',  '-' ],
-         ['-',  '-',  '-',  '-',  'bR',  '-',  '-',  '-' ],
+         ['-',  '-',   '-',  '-',  '-',  '-',  '-',  '-' ],
+         ['-',  '-',  '-',  '-',   '-',  '-',  '-',  '-' ],
          ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
          ['wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP'],
          ['wR', 'wN', 'wB', 'wQ', 'wK', 'wB', 'wN', 'wR']]
+# board = [['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
+#          ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
+#          ['-',  '-',  '-',  '-',  '-',  'wR',  '-',  '-' ],
+#          ['-',  '-',   '-',  '-',  '-',  '-',  '-',  '-' ],
+#          ['-',  '-',  'bB',  '-',   '-',  '-',  '-',  '-' ],
+#          ['-',  '-',  '-',  'wB',  '-',  '-',  '-',  '-' ],
+#          ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
+#         ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ]]
 
 cursorPos = [4,4]
 selectedPos = [-1,-1]
