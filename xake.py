@@ -1,7 +1,38 @@
 #input
+from typing import get_origin
 from pynput.keyboard import Listener
 import os
 import time
+
+cursorPos = [4,4]
+selectedPos = [-1,-1]
+movablePos = [-1,-1]
+turn = 'w'
+positions = []
+promoting = False
+LUT = {
+    'bP': '♙ ',
+    'bN': '♘ ',
+    'bB': '♗ ',
+    'bR': '♖ ',
+    'bQ': '♕ ',
+    'bK': '♔ ',
+    'wP': '♟ ',
+    'wN': '♞ ',
+    'wB': '♝ ',
+    'wR': '♜ ',
+    'wQ': '♛ ',
+    'wK': '♚ ',
+    '-': '  ',
+}
+board = [['bR', 'bN', 'bB', 'bQ', 'bK', 'bB', 'bN', 'bR'],
+         ['bP', 'bP', 'bP', '-', '-', 'bP', 'bP', '-'],
+         ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
+         ['-',  '-',   '-',  '-',  '-',  '-',  '-',  '-' ],
+         ['-',  '-',  '-',  '-',   '-',  '-',  '-',  '-' ],
+         ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
+         ['wP', 'wP', 'wP', '-', '-', 'wP', 'wP', '-'],
+         ['wR', 'wN', 'wB', 'wQ', 'wK', 'wB', 'wN', 'wR']]
 
 def keyInput(key):
     global selectedPos
@@ -16,8 +47,14 @@ def keyInput(key):
     except: 
         pass
 def onPress(key):
+    global cursorPos
+    global promoting
     keyInput(key)
-    render(board)
+    if promoting:
+        cursorPos = [0,0]
+        promotePawn()
+    else:
+        render(board)
 
 def clearScreen():
     time.sleep(0.05)
@@ -46,7 +83,19 @@ def movementsRaycast(a,b):
             elif board[selectedPos[0]+i*a][selectedPos[1]+i*b][0] == opositeTurn(turn): #other color pices to stop moving after that
                 positions.append([selectedPos[0]+i*a, selectedPos[1]+i*b])
                 break
-
+def promotePawn():
+    global LUT
+    global turn
+    global cursorPos
+    print('Select pice to promote to:\n    ╔═══╦═══╦═══╦═══╗\n    ║ ', end='')
+    for i in range(): #only compute from first pice to last for cursor rendering
+        if cursorPos[1] == 0: print(LUT[turn + 'Q'])
+        elif cursorPos[1] == 1: print(LUT[turn + 'R'])
+        elif cursorPos[1] == 2: print(LUT[turn + 'B'])
+        elif cursorPos[1] == 3: print(LUT[turn + 'N'])
+    #print('Select pice to promote to:\n    ╔═══╦═══╦═══╦═══╗\n    ║ {}║ {}║ {}║ {}║\n    ╚═══╩═══╩═══╩═══╝'.format(LUT[turn + 'Q'], LUT[turn + 'R'], LUT[turn + 'B'], LUT[turn + 'N']))
+    print('║\n    ╚═══╩═══╩═══╩═══╝')
+promotePawn()
 def selectOrMove():
     global selectedPos
     global turn
@@ -124,22 +173,7 @@ def render(board):
     global selectedPos
     global positions
     global movablePos
-    LUT = {
-        'bP': '♙ ',
-        'bN': '♘ ',
-        'bB': '♗ ',
-        'bR': '♖ ',
-        'bQ': '♕ ',
-        'bK': '♔ ',
-        'wP': '♟ ',
-        'wN': '♞ ',
-        'wB': '♝ ',
-        'wR': '♜ ',
-        'wQ': '♛ ',
-        'wK': '♚ ',
-        '-': '  ',
-    }
-
+    global LUT
     # MoveLut = {
     #     'bP': [[-1,-1],[-1,1],[-1,0],[-2,0]],
     #     'bN': [[1,-2],[1,2],[2,1],[2,-1],[-1,-2],[-1,2],[-2,1],[-2,-1]],
@@ -176,14 +210,6 @@ def render(board):
             print(item,end='')
         print()
 
-board = [['bR', 'bN', 'bB', 'bQ', 'bK', 'bB', 'bN', 'bR'],
-         ['bP', 'bP', 'bP', '-', '-', 'bP', 'bP', '-'],
-         ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
-         ['-',  '-',   '-',  '-',  '-',  '-',  '-',  '-' ],
-         ['-',  '-',  '-',  '-',   '-',  '-',  '-',  '-' ],
-         ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
-         ['wP', 'wP', 'wP', '-', '-', 'wP', 'wP', '-'],
-         ['wR', 'wN', 'wB', 'wQ', 'wK', 'wB', 'wN', 'wR']]
 # board = [['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
 #          ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
 #          ['-',  '-',  '-',  '-',  '-',  'wR',  '-',  '-' ],
@@ -193,19 +219,6 @@ board = [['bR', 'bN', 'bB', 'bQ', 'bK', 'bB', 'bN', 'bR'],
 #          ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
 #         ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ]]
 
-board = [['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
-         ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
-         ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
-         ['-',  '-',  '-',  'bB',  '-',  '-',  '-',  '-' ],
-         ['-',  '-',  '-',  '-',  'wB',  '-',  '-',  '-' ],
-         ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
-         ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
-         ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ]]
-cursorPos = [4,4]
-selectedPos = [-1,-1]
-movablePos = [-1,-1]
-turn = 'w'
-positions = []
 
 with Listener(on_press=onPress) as l:
     l.join()
