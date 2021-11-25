@@ -46,6 +46,17 @@ def movementsRaycast(a,b):
             elif board[selectedPos[0]+i*a][selectedPos[1]+i*b][0] == opositeTurn(turn): #other color pices to stop moving after that
                 positions.append([selectedPos[0]+i*a, selectedPos[1]+i*b])
                 break
+def movementsRaycastN(a,b):
+    global selectedPos
+    global board
+    global turn
+    global positions
+    if selectedPos[0]+1*a <= 7 and selectedPos[0]+1*a >= 0 and selectedPos[1]+1*b <= 7 and selectedPos[1]+1*b >= 0:
+        if board[selectedPos[0]+1*a][selectedPos[1]+1*b][0] == '-': #spaces
+            positions.append([selectedPos[0]+1*a, selectedPos[1]+1*b])
+        elif board[selectedPos[0]+1*a][selectedPos[1]+1*b][0] == opositeTurn(turn): #other color pices to stop moving after that
+            positions.append([selectedPos[0]+1*a, selectedPos[1]+1*b])
+            
 
 def selectOrMove():
     global selectedPos
@@ -67,9 +78,18 @@ def selectOrMove():
             movementsRaycast(-1,1)
             movementsRaycast(1,-1)
             movementsRaycast(-1,-1)
-        if board[cursorPos[0]][cursorPos[1]][1] == 'K':s
-        
-
+        #===kNight===#
+        if board[cursorPos[0]][cursorPos[1]][1] == 'N':
+    
+            movementsRaycastN(1,-2)
+            movementsRaycastN(1,2)
+            movementsRaycastN(-1,-2)
+            movementsRaycastN(-1,2)
+            movementsRaycastN(2,1)
+            movementsRaycastN(-2,-1)
+            movementsRaycastN(-2,1)
+            movementsRaycastN(2,-1)
+            
         #===QWEEN===#
         if board[cursorPos[0]][cursorPos[1]][1] == 'Q':
             movementsRaycast(1,1)
@@ -80,6 +100,16 @@ def selectOrMove():
             movementsRaycast(0,1)
             movementsRaycast(-1,0)
             movementsRaycast(0,-1)
+        if board[cursorPos[0]][cursorPos[1]][1] == 'K':
+            movementsRaycastN(0,1)
+            movementsRaycastN(0,-1)
+            movementsRaycastN(1,0)
+            movementsRaycastN(-1,0)
+            movementsRaycastN(1,1)
+            movementsRaycastN(-1,1)
+            movementsRaycastN(1,-1)
+            movementsRaycastN(-1,-1)
+            pass
         #===PAWN===#
         if board[cursorPos[0]][cursorPos[1]][1] == 'P':
             if turn == 'w': direction = -1
@@ -95,13 +125,14 @@ def selectOrMove():
                 if selectedPos[0] == 1 and board[3][selectedPos[1]][0] == '-' and board[cursorPos[0]][cursorPos[1]][0] == 'b': # can move two
                     positions.append([3,selectedPos[1]])
 
-
     elif selectedPos != [-1,-1]:
         if [cursorPos[0],cursorPos[1]] in positions:
             board[cursorPos[0]][cursorPos[1]] = board[selectedPos[0]][selectedPos[1]]
             board[selectedPos[0]][selectedPos[1]] = '-'
             turn = opositeTurn(turn)
         selectedPos = [-1,-1]
+
+    print(positions)
         
         
 def color(string, color=''):
@@ -156,7 +187,7 @@ def render(board):
     #     'wQ': [[0,-1],[0,-2],[0,-3],[0,-4],[0,-5],[0,-6],[0,-7],[0,1],[0,2],[0,3],[0,4],[0,5],[0,6],[0,7],[-1,0],[-2,0],[-3,0],[-4,0],[-5,0],[-6,0],[-7,0],[1,0],[2,0],[3,0],[4,0],[5,0],[6,0],[7,0],[1,1],[2,2],[3,3],[4,4],[5,5],[6,6],[7,7],[-1,1],[-2,2],[-3,3],[-4,4],[-5,5],[-6,6],[-7,7],[1,-1],[2,-2],[3,-3],[4,-4],[5,-5],[6,-6],[7,-7],[-1,-1],[-2,-2],[-3,-3],[-4,-4],[-5,-5],[-6,-6],[-7,-7]],
     #     'wK': [[-1,0],[1,0],[0,1],[0,-1],[1,-1],[-1,-1],[-1,1],[1,1]],
     # }
-    # clearScreen()
+    clearScreen()
     for i in range(8):
         for j in range(8):
             item = LUT[board[i][j]]
@@ -179,12 +210,12 @@ def render(board):
         print()
 
 board = [['bR', 'bN', 'bB', 'bQ', 'bK', 'bB', 'bN', 'bR'],
-         ['bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP'],
+         ['bP', 'bP', 'bP', '-', '-', 'bP', 'bP', '-'],
          ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
          ['-',  '-',   '-',  '-',  '-',  '-',  '-',  '-' ],
          ['-',  '-',  '-',  '-',   '-',  '-',  '-',  '-' ],
          ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
-         ['wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP'],
+         ['wP', 'wP', 'wP', '-', '-', 'wP', 'wP', '-'],
          ['wR', 'wN', 'wB', 'wQ', 'wK', 'wB', 'wN', 'wR']]
 # board = [['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
 #          ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
@@ -195,6 +226,14 @@ board = [['bR', 'bN', 'bB', 'bQ', 'bK', 'bB', 'bN', 'bR'],
 #          ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
 #         ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ]]
 
+# board = [['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
+#          ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
+#          ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
+#          ['-',  '-',  '-',  'bB',  '-',  '-',  '-',  '-' ],
+#          ['-',  '-',  '-',  '-',  'wB',  '-',  '-',  '-' ],
+#          ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
+#          ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
+#          ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ]]
 cursorPos = [4,4]
 selectedPos = [-1,-1]
 movablePos = [-1,-1]
