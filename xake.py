@@ -36,7 +36,7 @@ board = [['bR', 'bN', 'bB', 'bQ', 'bK', 'bB', 'bN', 'bR'],
 
 def keyInput(key):
     global selectedPos
-    global cursorPos    
+    global cursorPos
     try:
         if key == key.up and cursorPos[0] != 0: cursorPos[0] -= 1
         elif key == key.down and cursorPos[0] != 7: cursorPos[0] += 1
@@ -153,16 +153,18 @@ def selectOrMove():
             elif turn == 'b': direction = 1
             if board[selectedPos[0]+direction][selectedPos[1]][0] == '-': # can move one
                 positions.append([selectedPos[0]+direction,selectedPos[1]])
-                if selectedPos[0] == 6 and board[4][selectedPos[1]][0] == '-' and board[cursorPos[0]][cursorPos[1]][0] == 'w': # can move two (white)
-                    positions.append([4,selectedPos[1]])
-                if selectedPos[0] == 1 and board[3][selectedPos[1]][0] == '-' and board[cursorPos[0]][cursorPos[1]][0] == 'b': # can move two (black)
-                    positions.append([3,selectedPos[1]])
-            if board[selectedPos[0]+direction][selectedPos[1]+1][0] == opositeTurn(turn): # can eat right
-                positions.append([selectedPos[0]+direction,selectedPos[1]+1])
+        
+            if selectedPos[0] == 6 and board[4][selectedPos[1]][0] == '-' and board[cursorPos[0]][cursorPos[1]][0] == 'w': # can move two (white)
+                positions.append([4,selectedPos[1]])
+            if selectedPos[0] == 1 and board[3][selectedPos[1]][0] == '-' and board[cursorPos[0]][cursorPos[1]][0] == 'b': # can move two (black)
+                positions.append([3,selectedPos[1]])
+            if selectedPos[0]+1 <= 7 and selectedPos[0]+1 >= 0 and selectedPos[1]+1 <= 7 and selectedPos[1]+1 >= 0:
+                if board[selectedPos[0]+direction][selectedPos[1]+1][0] == opositeTurn(turn): # can eat right
+                    positions.append([selectedPos[0]+direction,selectedPos[1]+1])
+            if selectedPos[0]-1 <= 7 and selectedPos[0]-1 >= 0 and selectedPos[1]-1 <= 7 and selectedPos[1]-1 >= 0:
+                if board[selectedPos[0]+direction][selectedPos[1]-1][0] == opositeTurn(turn): # can eat left
+                    positions.append([selectedPos[0]+direction,selectedPos[1]-1])
                 
-            if board[selectedPos[0]+direction][selectedPos[1]-1][0] == opositeTurn(turn): # can eat left
-                positions.append([selectedPos[0]+direction,selectedPos[1]-1])
-
     elif selectedPos != [-1,-1]:
         if [cursorPos[0],cursorPos[1]] in positions:
             board[cursorPos[0]][cursorPos[1]] = board[selectedPos[0]][selectedPos[1]]
@@ -196,22 +198,23 @@ def render(board):
     for i in range(8):
         for j in range(8):
             item = LUT[board[i][j]]
+            if i == cursorPos[0] and j == cursorPos[1]:
+                item = color(item, 'orange') # Cursor
             if selectedPos != [-1,-1] and [i,j] in positions:
                 if board[i][j][0] == opositeTurn(turn) or selectedPos == turn:
                     item = color(item, 'red') #Movable
                 else:
                     item = color(item, 'lightMove') #Movable
+
             if i == cursorPos[0] and j == cursorPos[1] and cursorPos == selectedPos:
                 item = color(item, 'yellow') #Selected and cursor in same position
             if i == selectedPos[0] and j == selectedPos[1]:
                 item = color(item, 'green') # selected
-            if i == cursorPos[0] and j == cursorPos[1]:
-                item = color(item, 'orange') # Cursor
 
             if (i+j) % 2 == 0:
                 item = color(item, 'white')
             print(item,end='')
         print()
-    
+    print(positions)
 with Listener(on_press=onPress) as l:
     l.join()
