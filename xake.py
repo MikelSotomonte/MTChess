@@ -24,17 +24,23 @@ def opositeTurn(turn):
     else: turn = 'w'
     return turn
 
-#def checkMovements(a,b):
-  #  global selectedPos
-   # global board
-    #global turn
-    #global positions
-    #for i in range(1, 7, 1): #down
-     #   if board[selectedPos[a]+a*i][selectedPos[b]+b*i][0] != turn: #other color pices and spaces
-      #      positions.append([selectedPos[a]+a*i, selectedPos[b]+b*i])
-       #     if board[selectedPos[a]+a*i][selectedPos[b]+b*i][0] == opositeTurn(turn): #other color pices to stop moving after that
-        #        break
-        #else: break
+def checkMovements(a,b):
+    global selectedPos
+    global board
+    global turn
+    global positions
+    
+    for i in range(1, 8, 1):
+        if selectedPos[1]+i*a <= 7 and selectedPos[1]+i*a >= 0 and selectedPos[1]+i*b <= 7 and  + selectedPos[1]+i*b >= 0:
+            if board[selectedPos[0]+i*a][selectedPos[1]+i*b][0] == '-': #spaces
+                positions.append([selectedPos[0]+i*a, selectedPos[1]+i*b])
+            elif board[selectedPos[0]+i*a][selectedPos[1]+i*b][0] == turn: #same color pices
+                break
+            elif board[selectedPos[0]+i*a][selectedPos[1]+i*b][0] == opositeTurn(turn): #other color pices to stop moving after that
+                positions.append([selectedPos[0]+i*a, selectedPos[1]+i*b])
+                break
+        else: break
+
 
 def selectOrMove():
     global selectedPos
@@ -43,16 +49,13 @@ def selectOrMove():
     global positions
     if board[cursorPos[0]][cursorPos[1]][0] == turn:
         selectedPos = cursorPos.copy()
-        #===ROOK===#
-        if board[cursorPos[0]][cursorPos[1]][1] == 'R': 
+        if board[cursorPos[0]][cursorPos[1]][1] == 'R':
             positions = []
-            print('very before')
-
-            for i in range(1, 7, 1):#right
-                if board[selectedPos[0]][selectedPos[1]+i][0] != turn: #other color pices and spaces
-                    positions.append([selectedPos[0], selectedPos[1]+i])
-                    if board[selectedPos[0]][selectedPos[1]+i][0] == opositeTurn(turn): #other color pices to stop moving after that
-                        break
+            checkMovements(1,0)
+            checkMovements(0,1)
+            checkMovements(-1,0)
+            checkMovements(0,-1)
+        #===ROOK===#
         #checkMovements(0,1)
         #checkMovements(0,-1)
         #checkMovements(1,0)
@@ -60,10 +63,12 @@ def selectOrMove():
             #print(positions)
             
     elif selectedPos != [-1,-1]:
-        board[cursorPos[0]][cursorPos[1]] = board[selectedPos[0]][selectedPos[1]]
-        board[selectedPos[0]][selectedPos[1]] = '-'
+        if [cursorPos[0],cursorPos[1]] in positions:
+            board[cursorPos[0]][cursorPos[1]] = board[selectedPos[0]][selectedPos[1]]
+            board[selectedPos[0]][selectedPos[1]] = '-'
+            turn = opositeTurn(turn)
         selectedPos = [-1,-1]
-        turn = opositeTurn(turn)
+        
         
 def color(string, color=''):
         #https://stackabuse.com/how-to-print-colored-text-in-python/
@@ -115,11 +120,11 @@ def render(board):
         'wQ': [[0,-1],[0,-2],[0,-3],[0,-4],[0,-5],[0,-6],[0,-7],[0,1],[0,2],[0,3],[0,4],[0,5],[0,6],[0,7],[-1,0],[-2,0],[-3,0],[-4,0],[-5,0],[-6,0],[-7,0],[1,0],[2,0],[3,0],[4,0],[5,0],[6,0],[7,0],[1,1],[2,2],[3,3],[4,4],[5,5],[6,6],[7,7],[-1,1],[-2,2],[-3,3],[-4,4],[-5,5],[-6,6],[-7,7],[1,-1],[2,-2],[3,-3],[4,-4],[5,-5],[6,-6],[7,-7],[-1,-1],[-2,-2],[-3,-3],[-4,-4],[-5,-5],[-6,-6],[-7,-7]],
         'wK': [[-1,0],[1,0],[0,1],[0,-1],[1,-1],[-1,-1],[-1,1],[1,1]],
     }
-    # #time.sleep(0.01)
-    # if os.name == 'nt':
-    #     os.system('cls')
-    # else:
-    #     os.system('clear')
+    time.sleep(0.05)
+    if os.name == 'nt':
+        os.system('cls')
+    else:
+        os.system('clear')
     for i in range(8):
         for j in range(8):
             item = LUT[board[i][j]]
