@@ -5,7 +5,7 @@ import time
 
 def keyInput(key):
     global selectedPos
-    global cursorPos
+    global cursorPos    
     try:
         if key == key.up and cursorPos[0] != 0: cursorPos[0] -= 1
         elif key == key.down and cursorPos[0] != 7: cursorPos[0] += 1
@@ -19,52 +19,83 @@ def onPress(key):
     keyInput(key)
     render(board)
 
+def clearScreen():
+    time.sleep(0.05)
+    if os.name == 'nt':
+        os.system('cls')
+    else:
+        os.system('clear')
+
 def opositeTurn(turn):
     if turn == 'w': turn = 'b'
     else: turn = 'w'
     return turn
 
-def checkMovements(a,b):
+def movementsRaycast(a,b):
     global selectedPos
     global board
     global turn
     global positions
     
     for i in range(1, 8, 1):
-        if selectedPos[1]+i*a <= 7 and selectedPos[1]+i*a >= 0 and selectedPos[1]+i*b <= 7 and  + selectedPos[1]+i*b >= 0:
+        if selectedPos[0]+i*a <= 7 and selectedPos[0]+i*a >= 0 and selectedPos[1]+i*b <= 7 and selectedPos[1]+i*b >= 0:
             if board[selectedPos[0]+i*a][selectedPos[1]+i*b][0] == '-': #spaces
                 positions.append([selectedPos[0]+i*a, selectedPos[1]+i*b])
             elif board[selectedPos[0]+i*a][selectedPos[1]+i*b][0] == turn: #same color pices
                 break
             elif board[selectedPos[0]+i*a][selectedPos[1]+i*b][0] == opositeTurn(turn): #other color pices to stop moving after that
-                AtackPosition.append([selectedPos[0]+i*a, selectedPos[1]+i*b])
+                positions.append([selectedPos[0]+i*a, selectedPos[1]+i*b])
                 break
-        else: break
-
 
 def selectOrMove():
     global selectedPos
     global turn
     global board
     global positions
-    global AtackPosition
     if board[cursorPos[0]][cursorPos[1]][0] == turn:
         selectedPos = cursorPos.copy()
-        if board[cursorPos[0]][cursorPos[1]][1] == 'R':
-            positions = []
-            AtackPosition = []
-            checkMovements(1,0)
-            checkMovements(0,1)
-            checkMovements(-1,0)
-            checkMovements(0,-1)
+        positions = []
         #===ROOK===#
-        #checkMovements(0,1)
-        #checkMovements(0,-1)
-        #checkMovements(1,0)
-        #checkMovements(-1,0)
-            #print(positions)
-            
-            
+        if board[cursorPos[0]][cursorPos[1]][1] == 'R':
+            movementsRaycast(1,0)
+            movementsRaycast(0,1)
+            movementsRaycast(-1,0)
+            movementsRaycast(0,-1)
+        #===BISHOP===#
+        if board[cursorPos[0]][cursorPos[1]][1] == 'B':
+            movementsRaycast(1,1)
+            movementsRaycast(-1,1)
+            movementsRaycast(1,-1)
+            movementsRaycast(-1,-1)
+        if board[cursorPos[0]][cursorPos[1]][1] == 'K':s
+        
+
+        #===QWEEN===#
+        if board[cursorPos[0]][cursorPos[1]][1] == 'Q':
+            movementsRaycast(1,1)
+            movementsRaycast(-1,1)
+            movementsRaycast(1,-1)
+            movementsRaycast(-1,-1)
+            movementsRaycast(1,0)
+            movementsRaycast(0,1)
+            movementsRaycast(-1,0)
+            movementsRaycast(0,-1)
+        #===PAWN===#
+        if board[cursorPos[0]][cursorPos[1]][1] == 'P':
+            if turn == 'w': direction = -1
+            elif turn == 'b': direction = 1
+            if board[selectedPos[0]+direction][selectedPos[1]-1][0] == opositeTurn(turn): # can eat left
+                positions.append([selectedPos[0]+direction,selectedPos[1]-1])
+            if board[selectedPos[0]+direction][selectedPos[1]+1][0] == opositeTurn(turn): # can eat right
+                positions.append([selectedPos[0]+direction,selectedPos[1]+1])
+            if board[selectedPos[0]+direction][selectedPos[1]][0] == '-': # can move one
+                positions.append([selectedPos[0]+direction,selectedPos[1]])
+                if selectedPos[0] == 6 and board[4][selectedPos[1]][0] == '-' and board[cursorPos[0]][cursorPos[1]][0] == 'w': # can move two
+                    positions.append([4,selectedPos[1]])
+                if selectedPos[0] == 1 and board[3][selectedPos[1]][0] == '-' and board[cursorPos[0]][cursorPos[1]][0] == 'b': # can move two
+                    positions.append([3,selectedPos[1]])
+
+
     elif selectedPos != [-1,-1]:
         if [cursorPos[0],cursorPos[1]] in positions:
             board[cursorPos[0]][cursorPos[1]] = board[selectedPos[0]][selectedPos[1]]
@@ -86,7 +117,7 @@ def color(string, color=''):
     elif color == 'darkMove':
         string = '\u001b[48;5;65m' + string + '\u001b[0m'
     elif color == 'lightMove':
-        string = '\u001b[48;5;101m' + string + '\u001b[0m'
+        string = '\u001b[48;5;101m' + string + '\u001b[0m'    
     elif color == 'red':
         string = '\u001b[48;5;196m' + string + '\u001b[0m'
     return string
@@ -111,25 +142,21 @@ def render(board):
         '-': '  ',
     }
 
-    MoveLut = {
-        'bP': [[-1,-1],[-1,1],[-1,0],[-2,0]],
-        'bN': [[1,-2],[1,2],[2,1],[2,-1],[-1,-2],[-1,2],[-2,1],[-2,-1]],
-        'bB': [[1,1],[1,-1],[-1,1],[-1,-1],[2,2],[2,-2],[-2,2],[-2,-2],[3,3],[3,-3],[-3,3],[-3,-3],[4,4],[4,-4],[-4,4],[-4,-4],[5,5],[5,-5],[-5,5],[-5,-5],[6,6],[6,-6],[-6,6],[-6,-6],[7,7],[7,-7],[-7,7],[-7,-7]],
-        'bR': [[0,-1],[0,-2],[0,-3],[0,-4],[0,-5],[0,-6],[0,-7],[0,1],[0,2],[0,3],[0,4],[0,5],[0,6],[0,7],[-1,0],[-2,0],[-3,0],[-4,0],[-5,0],[-6,0],[-7,0],[1,0],[2,0],[3,0],[4,0],[5,0],[6,0],[7,0]],
-        'bQ': [[0,-1],[0,-2],[0,-3],[0,-4],[0,-5],[0,-6],[0,-7],[0,1],[0,2],[0,3],[0,4],[0,5],[0,6],[0,7],[-1,0],[-2,0],[-3,0],[-4,0],[-5,0],[-6,0],[-7,0],[1,0],[2,0],[3,0],[4,0],[5,0],[6,0],[7,0],[1,1],[2,2],[3,3],[4,4],[5,5],[6,6],[7,7],[-1,1],[-2,2],[-3,3],[-4,4],[-5,5],[-6,6],[-7,7],[1,-1],[2,-2],[3,-3],[4,-4],[5,-5],[6,-6],[7,-7],[-1,-1],[-2,-2],[-3,-3],[-4,-4],[-5,-5],[-6,-6],[-7,-7]],
-        'bK': [[-1,0],[1,0],[0,1],[0,-1],[1,-1],[-1,-1],[-1,1],[1,1]],
-        'wP': [[1,-1],[1,1],[1,0],[2,0]],
-        'wN': [[1,-2],[1,2],[2,1],[2,-1],[-1,-2],[-1,2],[-2,1],[-2,-1]],
-        'wB': [[1,1],[1,-1],[-1,1], [-1,-1],[2,2],[2,-2],[-2,2],[-2,-2], [3,3],[3,-3],[-3,3],[-3,-3],[4,4],[4,-4],[-4,4],[-4,-4],[5,5],[5,-5],[-5,5],[-5,-5],[6,6],[6,-6],[-6,6],[-6,-6],[7,7],[7,-7],[-7,7],[-7,-7]],
-        'wR': [[0,-1],[0,-2],[0,-3],[0,-4],[0,-5],[0,-6],[0,-7],[0,1],[0,2],[0,3],[0,4],[0,5],[0,6],[0,7],[-1,0],[-2,0],[-3,0],[-4,0],[-5,0],[-6,0],[-7,0],[1,0],[2,0],[3,0],[4,0],[5,0],[6,0],[7,0]],
-        'wQ': [[0,-1],[0,-2],[0,-3],[0,-4],[0,-5],[0,-6],[0,-7],[0,1],[0,2],[0,3],[0,4],[0,5],[0,6],[0,7],[-1,0],[-2,0],[-3,0],[-4,0],[-5,0],[-6,0],[-7,0],[1,0],[2,0],[3,0],[4,0],[5,0],[6,0],[7,0],[1,1],[2,2],[3,3],[4,4],[5,5],[6,6],[7,7],[-1,1],[-2,2],[-3,3],[-4,4],[-5,5],[-6,6],[-7,7],[1,-1],[2,-2],[3,-3],[4,-4],[5,-5],[6,-6],[7,-7],[-1,-1],[-2,-2],[-3,-3],[-4,-4],[-5,-5],[-6,-6],[-7,-7]],
-        'wK': [[-1,0],[1,0],[0,1],[0,-1],[1,-1],[-1,-1],[-1,1],[1,1]],
-    }
-    time.sleep(0.05)
-    if os.name == 'nt':
-        os.system('cls')
-    else:
-        os.system('clear')
+    # MoveLut = {
+    #     'bP': [[-1,-1],[-1,1],[-1,0],[-2,0]],
+    #     'bN': [[1,-2],[1,2],[2,1],[2,-1],[-1,-2],[-1,2],[-2,1],[-2,-1]],
+    #     'bB': [[1,1],[1,-1],[-1,1],[-1,-1],[2,2],[2,-2],[-2,2],[-2,-2],[3,3],[3,-3],[-3,3],[-3,-3],[4,4],[4,-4],[-4,4],[-4,-4],[5,5],[5,-5],[-5,5],[-5,-5],[6,6],[6,-6],[-6,6],[-6,-6],[7,7],[7,-7],[-7,7],[-7,-7]],
+    #     'bR': [[0,-1],[0,-2],[0,-3],[0,-4],[0,-5],[0,-6],[0,-7],[0,1],[0,2],[0,3],[0,4],[0,5],[0,6],[0,7],[-1,0],[-2,0],[-3,0],[-4,0],[-5,0],[-6,0],[-7,0],[1,0],[2,0],[3,0],[4,0],[5,0],[6,0],[7,0]],
+    #     'bQ': [[0,-1],[0,-2],[0,-3],[0,-4],[0,-5],[0,-6],[0,-7],[0,1],[0,2],[0,3],[0,4],[0,5],[0,6],[0,7],[-1,0],[-2,0],[-3,0],[-4,0],[-5,0],[-6,0],[-7,0],[1,0],[2,0],[3,0],[4,0],[5,0],[6,0],[7,0],[1,1],[2,2],[3,3],[4,4],[5,5],[6,6],[7,7],[-1,1],[-2,2],[-3,3],[-4,4],[-5,5],[-6,6],[-7,7],[1,-1],[2,-2],[3,-3],[4,-4],[5,-5],[6,-6],[7,-7],[-1,-1],[-2,-2],[-3,-3],[-4,-4],[-5,-5],[-6,-6],[-7,-7]],
+    #     'bK': [[-1,0],[1,0],[0,1],[0,-1],[1,-1],[-1,-1],[-1,1],[1,1]],
+    #     'wP': [[1,-1],[1,1],[1,0],[2,0]],
+    #     'wN': [[1,-2],[1,2],[2,1],[2,-1],[-1,-2],[-1,2],[-2,1],[-2,-1]],
+    #     'wB': [[1,1],[1,-1],[-1,1], [-1,-1],[2,2],[2,-2],[-2,2],[-2,-2], [3,3],[3,-3],[-3,3],[-3,-3],[4,4],[4,-4],[-4,4],[-4,-4],[5,5],[5,-5],[-5,5],[-5,-5],[6,6],[6,-6],[-6,6],[-6,-6],[7,7],[7,-7],[-7,7],[-7,-7]],
+    #     'wR': [[0,-1],[0,-2],[0,-3],[0,-4],[0,-5],[0,-6],[0,-7],[0,1],[0,2],[0,3],[0,4],[0,5],[0,6],[0,7],[-1,0],[-2,0],[-3,0],[-4,0],[-5,0],[-6,0],[-7,0],[1,0],[2,0],[3,0],[4,0],[5,0],[6,0],[7,0]],
+    #     'wQ': [[0,-1],[0,-2],[0,-3],[0,-4],[0,-5],[0,-6],[0,-7],[0,1],[0,2],[0,3],[0,4],[0,5],[0,6],[0,7],[-1,0],[-2,0],[-3,0],[-4,0],[-5,0],[-6,0],[-7,0],[1,0],[2,0],[3,0],[4,0],[5,0],[6,0],[7,0],[1,1],[2,2],[3,3],[4,4],[5,5],[6,6],[7,7],[-1,1],[-2,2],[-3,3],[-4,4],[-5,5],[-6,6],[-7,7],[1,-1],[2,-2],[3,-3],[4,-4],[5,-5],[6,-6],[7,-7],[-1,-1],[-2,-2],[-3,-3],[-4,-4],[-5,-5],[-6,-6],[-7,-7]],
+    #     'wK': [[-1,0],[1,0],[0,1],[0,-1],[1,-1],[-1,-1],[-1,1],[1,1]],
+    # }
+    # clearScreen()
     for i in range(8):
         for j in range(8):
             item = LUT[board[i][j]]
@@ -142,9 +169,10 @@ def render(board):
             
             #if selectedPos != [-1,-1] and movablePos in MoveLut[board[selectedPos[0]][selectedPos[1]]]:
             if selectedPos != [-1,-1] and [i,j] in positions:
-                item = color(item, 'lightMove') #Movable
-            if selectedPos != [-1,-1] and [i,j] in AtackPosition:
-                item = color(item, 'red') #Movable
+                if board[i][j][0] == opositeTurn(turn):
+                    item = color(item, 'red') #Movable
+                else:
+                    item = color(item, 'lightMove') #Movable
             if (i+j) % 2 == 0:
                 item = color(item, 'white')
             print(item,end='')
@@ -153,29 +181,25 @@ def render(board):
 board = [['bR', 'bN', 'bB', 'bQ', 'bK', 'bB', 'bN', 'bR'],
          ['bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP'],
          ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
-         ['-',  '-',  'wR',  '-',  '-',  '-',  '-',  '-' ],
-         ['-',  '-',  '-',  '-',  'bR',  '-',  '-',  '-' ],
+         ['-',  '-',   '-',  '-',  '-',  '-',  '-',  '-' ],
+         ['-',  '-',  '-',  '-',   '-',  '-',  '-',  '-' ],
          ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
          ['wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP'],
          ['wR', 'wN', 'wB', 'wQ', 'wK', 'wB', 'wN', 'wR']]
+# board = [['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
+#          ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
+#          ['-',  '-',  '-',  '-',  '-',  'wR',  '-',  '-' ],
+#          ['-',  '-',   '-',  '-',  '-',  '-',  '-',  '-' ],
+#          ['-',  '-',  'bB',  '-',   '-',  '-',  '-',  '-' ],
+#          ['-',  '-',  '-',  'wB',  '-',  '-',  '-',  '-' ],
+#          ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
+#         ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ]]
 
 cursorPos = [4,4]
 selectedPos = [-1,-1]
 movablePos = [-1,-1]
 turn = 'w'
 positions = []
-AtackPosition = []
+
 with Listener(on_press=onPress) as l:
     l.join()
-
-
-    '''debugMode = True
-    if debugMode == True:
-        print(debugMode)
-        try:
-            if str(key.char) == 'p':
-                print('worked')
-                if board[cursorPos[0]][cursorPos[1]][0] == 'b': 
-                    board[cursorPos[0]][cursorPos[1]] = 'wP'
-            else: board[cursorPos[0]][cursorPos[1]] = 'bP'
-        except: pass'''
