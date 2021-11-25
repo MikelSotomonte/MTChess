@@ -2,10 +2,13 @@
 from pynput.keyboard import Listener
 import os
 import time
-
+#==================#
+DEBUG_MODE = True #lets you add and remove pices easily
+#==================#
 def keyInput(key):
     global selectedPos
     global cursorPos
+    global DEBUG_MODE
     try:
         if key == key.up and cursorPos[0] != 0: cursorPos[0] -= 1
         elif key == key.down and cursorPos[0] != 7: cursorPos[0] += 1
@@ -13,6 +16,8 @@ def keyInput(key):
         elif key == key.right and cursorPos[1] != 7: cursorPos[1] += 1
         elif (key == key.enter or key == key.space) and (cursorPos == selectedPos) or key == key.esc: selectedPos = [-1,-1] #deselect
         elif key == key.enter or key == key.space: selectOrMove()
+        if DEBUG_MODE == True: 
+            if key == key.p: board[cursorPos[0]][cursorPos[1]] = 
     except: 
         pass
 def onPress(key):
@@ -82,9 +87,11 @@ def selectOrMove():
         #===PAWN===#
         if board[cursorPos[0]][cursorPos[1]][1] == 'P':
             if turn == 'w':
-                if board[selectedPos[0]-1][selectedPos[1]][0] != turn:
+                if board[selectedPos[0]-1][selectedPos[1]-1][0] == opositeTurn(turn): # can eat left
+                    positions.append([selectedPos[0]-1,selectedPos[1]-1])
+                if board[selectedPos[0]-1][selectedPos[1]][0] == '-': # can move one
                     positions.append([selectedPos[0]-1,selectedPos[1]])
-                    if selectedPos[0] == 6 and board[4][selectedPos[1]][0] != turn: # can move two
+                    if selectedPos[0] == 6 and board[4][selectedPos[1]][0] == '-': # can move two
                         positions.append([4,selectedPos[1]])
                 #if selectedPos[]
 
