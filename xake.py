@@ -153,12 +153,13 @@ def selectOrMove():
             elif turn == 'b': direction = 1
             if board[selectedPos[0]+direction][selectedPos[1]][0] == '-': # can move one
                 positions.append([selectedPos[0]+direction,selectedPos[1]])
-                if selectedPos[0] == 6 and board[4][selectedPos[1]][0] == '-' and board[cursorPos[0]][cursorPos[1]][0] == 'w': # can move two
+                if selectedPos[0] == 6 and board[4][selectedPos[1]][0] == '-' and board[cursorPos[0]][cursorPos[1]][0] == 'w': # can move two (white)
                     positions.append([4,selectedPos[1]])
-                if selectedPos[0] == 1 and board[3][selectedPos[1]][0] == '-' and board[cursorPos[0]][cursorPos[1]][0] == 'b': # can move two
+                if selectedPos[0] == 1 and board[3][selectedPos[1]][0] == '-' and board[cursorPos[0]][cursorPos[1]][0] == 'b': # can move two (black)
                     positions.append([3,selectedPos[1]])
             if board[selectedPos[0]+direction][selectedPos[1]+1][0] == opositeTurn(turn): # can eat right
                 positions.append([selectedPos[0]+direction,selectedPos[1]+1])
+                
             if board[selectedPos[0]+direction][selectedPos[1]-1][0] == opositeTurn(turn): # can eat left
                 positions.append([selectedPos[0]+direction,selectedPos[1]-1])
 
