@@ -58,10 +58,10 @@ def keyInput(key):
 def onPress(key):
     global cursorPos
     global promoting
-    keyInput(key)
     if promoting:
-        promotePawn()
+        promotePawn(key)
     else:
+        keyInput(key)
         render(board)
 
 def clearScreen():
@@ -92,20 +92,47 @@ def movementsRaycast(x,y,rango):
                 positions.append([selectedPos[0]+i*x, selectedPos[1]+i*y])
                 break
 
-def promotePawn():
+def promotePawn(key):
     global LUT
     global turn
     global cursorPos
+    global promoting
+    global board
+    global selectedPos
+    piceOrder = {
+        0: 'Q',
+        1: 'R',
+        2: 'B',
+        3: 'N'
+    }
+    print("LUL")
+    time.sleep(0.2)
     clearScreen()
     print(cursorPos)
     print('Select pice to promote to:\n    ╔═══╦═══╦═══╦═══╗\n', end='')
-    if cursorPos[1] > 2: cursorPos[1] = 3
     if cursorPos[1] == 0: printable = '║ {}║ {}║ {}║ {}║'.format(color(LUT[turn + 'Q'],'green'), LUT[turn + 'R'], LUT[turn + 'B'], LUT[turn + 'N'])
     if cursorPos[1] == 1: printable = '║ {}║ {}║ {}║ {}║'.format(LUT[turn + 'Q'], color(LUT[turn + 'R'],'green'), LUT[turn + 'B'], LUT[turn + 'N'])
     if cursorPos[1] == 2: printable = '║ {}║ {}║ {}║ {}║'.format(LUT[turn + 'Q'], LUT[turn + 'R'], color(LUT[turn + 'B'],'green'), LUT[turn + 'N'])
     if cursorPos[1] == 3: printable = '║ {}║ {}║ {}║ {}║'.format(LUT[turn + 'Q'], LUT[turn + 'R'], LUT[turn + 'B'], color(LUT[turn + 'N'],'green'))
     print('    ' + printable)
     print('    ╚═══╩═══╩═══╩═══╝')
+    try:
+        if cursorPos[1] < 3 and key == key.right: 
+            cursorPos[1] += 1
+            
+        elif cursorPos[1] > 0 and key == key.left: 
+            cursorPos[1] -= 1
+            
+        elif key == key.enter or key == key.space:
+            if turn == 'w': board[0][selectedPos[1]] = turn + piceOrder[cursorPos[1]]
+            if turn == 'b': board[7][selectedPos[1]] = turn + piceOrder[cursorPos[1]]
+            promoting = False
+            turn = opositeTurn(turn)
+            cursorPos = selectedPos
+            selectedPos = [-1,-1]
+            render()
+            return 0
+    except: pass
 # promotePawn()
 def selectOrMove():
     global selectedPos
@@ -180,27 +207,15 @@ def selectOrMove():
     elif selectedPos != [-1,-1]:
         if [cursorPos[0],cursorPos[1]] in positions:
             if cursorPos[0] == 0 and board[selectedPos[0]][selectedPos[1]] == 'wP':
+                board[selectedPos[0]][selectedPos[1]] = '-'
                 promoting = True
-                cursorPos = [-1,0]
-                promotePawn()
+                cursorPos[1] = 0
+                promotePawn(None)
             else:
                 board[cursorPos[0]][cursorPos[1]] = board[selectedPos[0]][selectedPos[1]]
                 board[selectedPos[0]][selectedPos[1]] = '-'
                 turn = opositeTurn(turn)
         if not promoting: selectedPos = [-1,-1]        
-        
-    if promoting:
-        print('yeahD', selectedPos)
-        time.sleep(5)
-        promoting = False
-        picesToPromote = {
-            0: 'Q',
-            1: 'R',
-            2: 'B',
-            3: 'N'
-        }
-        board[selectedPos[0]][selectedPos[1]] = turn + picesToPromote[cursorPos[1]]
-        turn = opositeTurn(turn)
 
 def color(string, color=''): #set colors
         #https://stackabuse.com/how-to-print-colored-text-in-python/
