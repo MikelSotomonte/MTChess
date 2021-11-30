@@ -129,9 +129,9 @@ def promotePawn(key):
         turn = opositeTurn(turn)
         cursorPos = selectedPos
         selectedPos = [-1,-1]
-        #render(board)
+        render(board)
         return 0
-    time.sleep(3)
+    #time.sleep(3)
 
 def selectOrMove():
     global selectedPos
