@@ -37,8 +37,8 @@ board = [['bR', 'bN', 'bB', 'bQ', 'bK', 'bB', 'bN', 'bR'],
 board = [['bR', 'bN', 'bB', 'bQ', '-', 'bB', 'bN', 'bR'],
          ['bP', 'bP', 'bP', 'bP', 'wP', 'bP', 'bP', 'bP'],
          ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
-         ['-',  '-',   '-',  '-',  '-',  '-',  '-',  '-' ],
-         ['-',  '-',  '-',  '-',   '-',  '-',  '-',  '-' ],
+         ['-',  '-',   '-',  '-',  '-',  '-',  '-',  '-'],
+         ['-',  '-',  '-',  '-',   '-',  '-',  '-',  '-'],
          ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
          ['wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP'],
          ['wR', 'wN', 'wB', 'wQ', 'wK', 'wB', 'wN', 'wR']]
@@ -56,7 +56,6 @@ def keyInput(key):
     except: 
         pass
 def onPress(key):
-    global cursorPos
     global promoting
     if promoting:
         promotePawn(key)
@@ -78,7 +77,6 @@ def opositeTurn(turn):
 
 def movementsRaycast(x,y,rango):
     global selectedPos
-    global board
     global turn
     global positions
     
@@ -99,14 +97,21 @@ def promotePawn(key):
     global promoting
     global board
     global selectedPos
+    print(promoting)
+    #time.sleep(2)
     piceOrder = {
         0: 'Q',
         1: 'R',
         2: 'B',
         3: 'N'
     }
-    print("LUL")
-    time.sleep(0.2)
+    print('OK WHOT')
+    if key != None:
+        if cursorPos[1] < 3 and key == key.right: 
+            cursorPos[1] += 1
+        elif cursorPos[1] > 0 and key == key.left: 
+            cursorPos[1] -= 1  
+        print("OK WHOT 2!!")
     clearScreen()
     print(cursorPos)
     print('Select pice to promote to:\n    ╔═══╦═══╦═══╦═══╗\n', end='')
@@ -116,24 +121,18 @@ def promotePawn(key):
     if cursorPos[1] == 3: printable = '║ {}║ {}║ {}║ {}║'.format(LUT[turn + 'Q'], LUT[turn + 'R'], LUT[turn + 'B'], color(LUT[turn + 'N'],'green'))
     print('    ' + printable)
     print('    ╚═══╩═══╩═══╩═══╝')
-    try:
-        if cursorPos[1] < 3 and key == key.right: 
-            cursorPos[1] += 1
-            
-        elif cursorPos[1] > 0 and key == key.left: 
-            cursorPos[1] -= 1
-            
-        elif key == key.enter or key == key.space:
-            if turn == 'w': board[0][selectedPos[1]] = turn + piceOrder[cursorPos[1]]
-            if turn == 'b': board[7][selectedPos[1]] = turn + piceOrder[cursorPos[1]]
-            promoting = False
-            turn = opositeTurn(turn)
-            cursorPos = selectedPos
-            selectedPos = [-1,-1]
-            render()
-            return 0
-    except: pass
-# promotePawn()
+    print(cursorPos)
+    if key == key.enter or key == key.space:
+        if turn == 'w': board[0][selectedPos[1]] = turn + piceOrder[cursorPos[1]]
+        if turn == 'b': board[7][selectedPos[1]] = turn + piceOrder[cursorPos[1]]
+        promoting = False
+        turn = opositeTurn(turn)
+        cursorPos = selectedPos
+        selectedPos = [-1,-1]
+        #render(board)
+        return 0
+    time.sleep(3)
+
 def selectOrMove():
     global selectedPos
     global turn
@@ -206,10 +205,11 @@ def selectOrMove():
                 
     elif selectedPos != [-1,-1]:
         if [cursorPos[0],cursorPos[1]] in positions:
-            if cursorPos[0] == 0 and board[selectedPos[0]][selectedPos[1]] == 'wP':
+            if cursorPos[0] == 0 and board[selectedPos[0]][selectedPos[1]] == 'wP': # promote
                 board[selectedPos[0]][selectedPos[1]] = '-'
                 promoting = True
                 cursorPos[1] = 0
+                print("before")
                 promotePawn(None)
             else:
                 board[cursorPos[0]][cursorPos[1]] = board[selectedPos[0]][selectedPos[1]]
