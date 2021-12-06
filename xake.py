@@ -25,14 +25,14 @@ LUT = {
     'wK': '♚ ',
     '-': '  '
 }
-board = [['bR', 'bN', 'bB', 'bQ', 'bK', 'bB', 'bN', 'bR'],
-         ['bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP'],
-         ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
-         ['-',  '-',   '-',  '-',  '-',  '-',  '-',  '-' ],
-         ['-',  '-',  '-',  '-',   '-',  '-',  '-',  '-' ],
-         ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
-         ['wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP'],
-         ['wR', 'wN', 'wB', 'wQ', 'wK', 'wB', 'wN', 'wR']]
+# board = [['bR', 'bN', 'bB', 'bQ', 'bK', 'bB', 'bN', 'bR'],
+#          ['bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP'],
+#          ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
+#          ['-',  '-',   '-',  '-',  '-',  '-',  '-',  '-' ],
+#          ['-',  '-',  '-',  '-',   '-',  '-',  '-',  '-' ],
+#          ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
+#          ['wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP'],
+#          ['wR', 'wN', 'wB', 'wQ', 'wK', 'wB', 'wN', 'wR']]
 
 board = [['bR', 'bN', 'bB', 'bQ', '-', 'bB', 'bN', 'bR'],
          ['bP', 'bP', 'bP', 'bP', 'wP', 'bP', 'bP', 'bP'],
@@ -40,8 +40,8 @@ board = [['bR', 'bN', 'bB', 'bQ', '-', 'bB', 'bN', 'bR'],
          ['-',  '-',   '-',  '-',  '-',  '-',  '-',  '-'],
          ['-',  '-',  '-',  '-',   '-',  '-',  '-',  '-'],
          ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
-         ['wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP'],
-         ['wR', 'wN', 'wB', 'wQ', 'wK', 'wB', 'wN', 'wR']]
+         ['wP', 'wP', 'wP', 'wP', 'bP', 'wP', 'wP', 'wP'],
+         ['wR', 'wN', 'wB', 'wQ', '-', 'wB', 'wN', 'wR']]
 
 def keyInput(key):
     global selectedPos
@@ -105,13 +105,11 @@ def promotePawn(key):
         2: 'B',
         3: 'N'
     }
-    print('OK WHOT')
     if key != None:
         if cursorPos[1] < 3 and key == key.right: 
             cursorPos[1] += 1
         elif cursorPos[1] > 0 and key == key.left: 
             cursorPos[1] -= 1  
-        print("OK WHOT 2!!")
     clearScreen()
     print(cursorPos)
     print('Select pice to promote to:\n    ╔═══╦═══╦═══╦═══╗\n', end='')
@@ -128,8 +126,8 @@ def promotePawn(key):
         promoting = False
         turn = opositeTurn(turn)
         cursorPos = selectedPos
-        selectedPos = [-1,-1]
         render(board)
+        selectedPos = [-1,-1]
         return 0
     #time.sleep(3)
 
@@ -205,7 +203,7 @@ def selectOrMove():
                 
     elif selectedPos != [-1,-1]:
         if [cursorPos[0],cursorPos[1]] in positions:
-            if cursorPos[0] == 0 and board[selectedPos[0]][selectedPos[1]] == 'wP': # promote
+            if (cursorPos[0] == 0 or cursorPos[0] == 7) and board[selectedPos[0]][selectedPos[1]] == turn + 'P': # promote
                 board[selectedPos[0]][selectedPos[1]] = '-'
                 promoting = True
                 cursorPos[1] = 0
@@ -236,31 +234,32 @@ def color(string, color=''): #set colors
     return string
 
 def render(board):
-    clearScreen()
-    #print('')
+    
     global selectedPos
     global positions
     global LUT
-    for i in range(8):
-        for j in range(8):
-            item = LUT[board[i][j]]
-            if i == cursorPos[0] and j == cursorPos[1]:
-                item = color(item, 'orange') # Cursor
-            if selectedPos != [-1,-1] and [i,j] in positions:
-                if board[i][j][0] == opositeTurn(turn) or selectedPos == turn:
-                    item = color(item, 'red') #Movable
-                else:
-                    item = color(item, 'lightMove') #Movable
+    if promoting == False:
+        clearScreen()
+        for i in range(8):
+            for j in range(8):
+                item = LUT[board[i][j]]
+                if i == cursorPos[0] and j == cursorPos[1]:
+                    item = color(item, 'orange') # Cursor
+                if selectedPos != [-1,-1] and [i,j] in positions:
+                    if board[i][j][0] == opositeTurn(turn) or selectedPos == turn:
+                        item = color(item, 'red') #Movable
+                    else:
+                        item = color(item, 'lightMove') #Movable
 
-            if i == cursorPos[0] and j == cursorPos[1] and cursorPos == selectedPos:
-                item = color(item, 'yellow') #Selected and cursor in same position
-            if i == selectedPos[0] and j == selectedPos[1]:
-                item = color(item, 'green') # selected
+                if i == cursorPos[0] and j == cursorPos[1] and cursorPos == selectedPos:
+                    item = color(item, 'yellow') #Selected and cursor in same position
+                if i == selectedPos[0] and j == selectedPos[1]:
+                    item = color(item, 'green') # selected
 
-            if (i+j) % 2 == 0:
-                item = color(item, 'white')
-            print(item,end='')
-        print()
-    print(positions)
+                if (i+j) % 2 == 0:
+                    item = color(item, 'white')
+                print(item,end='')
+            print()
+        print(positions)
 with Listener(on_press=onPress) as l:
     l.join()
