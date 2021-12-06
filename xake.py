@@ -270,7 +270,9 @@ def render(board):
                     item = color(item, 'white')
                 print(item,end='')
             print()
-
         print(positions)
+
 with Listener(on_press=onPress) as l:
     l.join()
+
+
