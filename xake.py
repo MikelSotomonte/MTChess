@@ -98,7 +98,6 @@ def promotePawn(key):
     global board
     global selectedPos
     print(promoting)
-    #time.sleep(2)
     piceOrder = {
         0: 'Q',
         1: 'R',
@@ -113,16 +112,22 @@ def promotePawn(key):
     clearScreen()
     print(cursorPos)
     print('Select pice to promote to:\n    ╔═══╦═══╦═══╦═══╗\n', end='')
-    if cursorPos[1] == 0: printable = '║ {}║ {}║ {}║ {}║'.format(color(LUT[turn + 'Q'],'green'), LUT[turn + 'R'], LUT[turn + 'B'], LUT[turn + 'N'])
-    if cursorPos[1] == 1: printable = '║ {}║ {}║ {}║ {}║'.format(LUT[turn + 'Q'], color(LUT[turn + 'R'],'green'), LUT[turn + 'B'], LUT[turn + 'N'])
-    if cursorPos[1] == 2: printable = '║ {}║ {}║ {}║ {}║'.format(LUT[turn + 'Q'], LUT[turn + 'R'], color(LUT[turn + 'B'],'green'), LUT[turn + 'N'])
-    if cursorPos[1] == 3: printable = '║ {}║ {}║ {}║ {}║'.format(LUT[turn + 'Q'], LUT[turn + 'R'], LUT[turn + 'B'], color(LUT[turn + 'N'],'green'))
+    if cursorPos[1] == 0:
+        printable = '║ {}║ {}║ {}║ {}║'.format(color(LUT[turn + 'Q'],'green'), LUT[turn + 'R'], LUT[turn + 'B'], LUT[turn + 'N'])
+    if cursorPos[1] == 1:
+        printable = '║ {}║ {}║ {}║ {}║'.format(LUT[turn + 'Q'], color(LUT[turn + 'R'],'green'), LUT[turn + 'B'], LUT[turn + 'N'])
+    if cursorPos[1] == 2:
+        printable = '║ {}║ {}║ {}║ {}║'.format(LUT[turn + 'Q'], LUT[turn + 'R'], color(LUT[turn + 'B'],'green'), LUT[turn + 'N'])
+    if cursorPos[1] == 3:
+        printable = '║ {}║ {}║ {}║ {}║'.format(LUT[turn + 'Q'], LUT[turn + 'R'], LUT[turn + 'B'], color(LUT[turn + 'N'],'green'))
     print('    ' + printable)
     print('    ╚═══╩═══╩═══╩═══╝')
     print(cursorPos)
     if key == key.enter or key == key.space:
-        if turn == 'w': board[0][selectedPos[1]] = turn + piceOrder[cursorPos[1]]
-        if turn == 'b': board[7][selectedPos[1]] = turn + piceOrder[cursorPos[1]]
+        if turn == 'w':
+            board[0][selectedPos[1]] = turn + piceOrder[cursorPos[1]]
+        if turn == 'b':
+            board[7][selectedPos[1]] = turn + piceOrder[cursorPos[1]]
         promoting = False
         turn = opositeTurn(turn)
         cursorPos = selectedPos
@@ -238,8 +243,13 @@ def render(board):
     global selectedPos
     global positions
     global LUT
+    
     if promoting == False:
         clearScreen()
+        if turn == "b":
+            print(color("      Black     ","red"))
+        else:
+            print(color("      White     ","red"))
         for i in range(8):
             for j in range(8):
                 item = LUT[board[i][j]]
@@ -260,6 +270,7 @@ def render(board):
                     item = color(item, 'white')
                 print(item,end='')
             print()
+
         print(positions)
 with Listener(on_press=onPress) as l:
     l.join()
