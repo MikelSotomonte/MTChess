@@ -97,7 +97,6 @@ def promotePawn(key):
     global promoting
     global board
     global selectedPos
-    print(promoting)
     piceOrder = {
         0: 'Q',
         1: 'R',
@@ -109,7 +108,7 @@ def promotePawn(key):
             cursorPos[1] += 1
         elif cursorPos[1] > 0 and key == key.left: 
             cursorPos[1] -= 1  
-    clearScreen()
+    # clearScreen()
     print(cursorPos)
     print('Select pice to promote to:\n    ╔═══╦═══╦═══╦═══╗\n', end='')
     if cursorPos[1] == 0:
@@ -122,17 +121,18 @@ def promotePawn(key):
         printable = '║ {}║ {}║ {}║ {}║'.format(LUT[turn + 'Q'], LUT[turn + 'R'], LUT[turn + 'B'], color(LUT[turn + 'N'],'green'))
     print('    ' + printable)
     print('    ╚═══╩═══╩═══╩═══╝')
-    print(cursorPos)
     if key == key.enter or key == key.space:
         if turn == 'w':
+            print(selectedPos)
             board[0][selectedPos[1]] = turn + piceOrder[cursorPos[1]]
+            print(board[0][selectedPos[1]])
         if turn == 'b':
             board[7][selectedPos[1]] = turn + piceOrder[cursorPos[1]]
         promoting = False
         turn = opositeTurn(turn)
         cursorPos = selectedPos
-        render(board)
         selectedPos = [-1,-1]
+        render(board)
         return 0
     #time.sleep(3)
 
@@ -207,12 +207,13 @@ def selectOrMove():
                     positions.append([selectedPos[0]+direction,selectedPos[1]-1])
                 
     elif selectedPos != [-1,-1]:
+        print(selectedPos,cursorPos)
         if [cursorPos[0],cursorPos[1]] in positions:
             if (cursorPos[0] == 0 or cursorPos[0] == 7) and board[selectedPos[0]][selectedPos[1]] == turn + 'P': # promote
                 board[selectedPos[0]][selectedPos[1]] = '-'
                 promoting = True
+                selectedPos = cursorPos.copy()
                 cursorPos[1] = 0
-                print("before")
                 promotePawn(None)
             else:
                 board[cursorPos[0]][cursorPos[1]] = board[selectedPos[0]][selectedPos[1]]
@@ -270,7 +271,7 @@ def render(board):
                     item = color(item, 'white')
                 print(item,end='')
             print()
-        print(positions)
+        # print(positions)
 
 with Listener(on_press=onPress) as l:
     l.join()
