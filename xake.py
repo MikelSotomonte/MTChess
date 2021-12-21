@@ -175,9 +175,7 @@ def selectOrMove():
             movementsRaycast(0,-1,8) #left
             if turn == "b":
                 if RbRMoved == False and not board[0][7] == "bR":
-                    print(RbRMoved)
                     RbRMoved = True
-                    print(RbRMoved)
                 if LbRMoved == False and not board[0][0] == "bR":
                     LbRMoved == True
 
@@ -224,23 +222,29 @@ def selectOrMove():
             movementsRaycast(0,-1,2)
             movementsRaycast(1,0,2)
             movementsRaycast(-1,0,2)
+
             if turn == "b":
-                print(selectedPos[1])
+                # if Rbcastle and board[0][6] == "bK":
+                #     board[0][5] = "bR"
+                #     board[0][7] = "-"
+                # if Lbcastle and board[0][2] == "bK":
+                #     board[0][3] = "bR"
+                #     board[0][0] = "-"
                 if bKMoved == False and not selectedPos[0] == 0 and not selectedPos[1] == 4:
                     bKMoved = True
-                if board[0][6] == "-" and board[0][5] == "-" and bKMoved == False and RbRMoved == False and board[0][7] == "bR":
+                if Rbcastle == False and board[0][6] == "-" and board[0][5] == "-" and bKMoved == False and RbRMoved == False and board[0][7] == "bR":
                     Rbcastle = True
                     movementsRaycast(0,1,3)
-                if (board[0][1] == "-" and board[0][2] == "-" and board[0][3] == "-") and (bKMoved == False and LbRMoved == False) and board[0][0] == "bR":
+                if Lbcastle == False and (board[0][1] == "-" and board[0][2] == "-" and board[0][3] == "-") and (bKMoved == False and LbRMoved == False) and board[0][0] == "bR":
                     Lbcastle = True
                     movementsRaycast(0,-1,3)
             if turn == "w":
                 if wKMoved == False and not selectedPos[0] == 7 and not selectedPos[1] == 4:
                     wKMoved = True
-                if (board[7][6] == "-" and board[7][5] == "-") and (wKMoved == False and RwRMoved == False) and board[7][7] == "wR":
+                if Rwcastle == False and (board[7][6] == "-" and board[7][5] == "-") and (wKMoved == False and RwRMoved == False) and board[7][7] == "wR":
                     Rwcastle = True
                     movementsRaycast(0,1,3)
-                if (board[7][1] == "-" and board[7][2] == "-" and board[7][3] == "-") and (wKMoved == False and RwRMoved == False) and board[7][0] == "wR":
+                if Lwcastle == False and (board[7][1] == "-" and board[7][2] == "-" and board[7][3] == "-") and (wKMoved == False and RwRMoved == False) and board[7][0] == "wR":
                     Lwcastle = True
                     movementsRaycast(0,-1,3)
                 
@@ -300,6 +304,8 @@ def render(board):
     global selectedPos
     global positions
     global LUT
+    global Rbcastle
+    global Lwcastle
     
     if promoting == False:
         # clearScreen()
@@ -310,6 +316,12 @@ def render(board):
         for i in range(8):
             for j in range(8):
                 item = LUT[board[i][j]]
+                if Rbcastle and board[0][6] == "bK":
+                    board[0][5] = "bR"
+                    board[0][7] = "-"
+                if Lbcastle and board[0][2] == "bK":
+                    board[0][3] = "bR"
+                    board[0][0] = "-"
                 if i == cursorPos[0] and j == cursorPos[1]:
                     item = color(item, 'orange') # Cursor
                 if selectedPos != [-1,-1] and [i,j] in positions:
