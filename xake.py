@@ -244,10 +244,6 @@ def selectOrMove():
                     Lwcastle = True
                     movementsRaycast(0,-1,3)
                 
-                
-      
-
-
         #===Pawn===#
         if board[cursorPos[0]][cursorPos[1]][1] == 'P':
             if turn == 'w': direction = -1
@@ -255,9 +251,9 @@ def selectOrMove():
             if board[selectedPos[0]+direction][selectedPos[1]][0] == '-': # can move one
                 positions.append([selectedPos[0]+direction,selectedPos[1]])
         
-            if selectedPos[0] == 6 and board[4][selectedPos[1]][0] == '-' and board[cursorPos[0]][cursorPos[1]][0] == 'w': # can move two (white)
+            if selectedPos[0] == 6 and board[4][selectedPos[1]][0] == '-' and board[5][selectedPos[1]][0] == '-' and board[cursorPos[0]][cursorPos[1]][0] == 'w': # can move two (white)
                 positions.append([4,selectedPos[1]])
-            if selectedPos[0] == 1 and board[3][selectedPos[1]][0] == '-' and board[cursorPos[0]][cursorPos[1]][0] == 'b': # can move two (black)
+            if selectedPos[0] == 1 and board[3][selectedPos[1]][0] == '-' and board[2][selectedPos[1]][0] == '-'and board[cursorPos[0]][cursorPos[1]][0] == 'b': # can move two (black)
                 positions.append([3,selectedPos[1]])
             if selectedPos[0]+1 <= 7 and selectedPos[0]+1 >= 0 and selectedPos[1]+1 <= 7 and selectedPos[1]+1 >= 0:
                 if board[selectedPos[0]+direction][selectedPos[1]+1][0] == opositeTurn(turn): # can eat right
