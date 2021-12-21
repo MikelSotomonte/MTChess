@@ -10,6 +10,16 @@ movablePos = [-1,-1]
 turn = 'w'
 positions = []
 promoting = False
+Lwcastle = False
+Rwcastle = False
+LwRMoved = False
+RwRMoved = False
+wKMoved = False
+Lbcastle = False
+Rbcastle = False
+LbRMoved = False
+RbRMoved = False
+bKMoved = False
 LUT = {
     'bP': '♙ ',
     'bN': '♘ ',
@@ -25,23 +35,23 @@ LUT = {
     'wK': '♚ ',
     '-': '  '
 }
-board = [['bR', 'bN', 'bB', 'bQ', 'bK', 'bB', 'bN', 'bR'],
+# board = [['bR', 'bN', 'bB', 'bQ', 'bK', 'bB', 'bN', 'bR'],
+#          ['bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP'],
+#          ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
+#          ['-',  '-',   '-',  '-',  '-',  '-',  '-',  '-' ],
+#          ['-',  '-',  '-',  '-',   '-',  '-',  '-',  '-' ],
+#          ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
+#          ['wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP'],
+#          ['wR', 'wN', 'wB', 'wQ', 'wK', 'wB', 'wN', 'wR']]
+
+board = [['bR', '-', '-', '-', 'bK', '-', '-', 'bR'],
          ['bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP'],
          ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
-         ['-',  '-',   '-',  '-',  '-',  '-',  '-',  '-' ],
-         ['-',  '-',  '-',  '-',   '-',  '-',  '-',  '-' ],
+         ['-',  '-',   '-',  '-',  'wP',  '-',  '-',  '-'],
+         ['-',  '-',  '-',  '-',   '-',  '-',  '-',  '-'],
          ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
          ['wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP'],
          ['wR', 'wN', 'wB', 'wQ', 'wK', 'wB', 'wN', 'wR']]
-
-# board = [['bR', 'bN', 'bB', 'bQ', '-', 'bB', 'bN', 'bR'],
-        #  ['bP', 'bP', 'bP', 'bP', 'wP', 'bP', 'bP', 'bP'],
-        #  ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
-        #  ['-',  '-',   '-',  '-',  '-',  '-',  '-',  '-'],
-        #  ['-',  '-',  '-',  '-',   '-',  '-',  '-',  '-'],
-        #  ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
-        #  ['wP', 'wP', 'wP', 'wP', 'bP', 'wP', 'wP', 'wP'],
-        #  ['wR', 'wN', 'wB', 'wQ', '-', 'wB', 'wN', 'wR']]
 
 def keyInput(key):
     global selectedPos
@@ -143,15 +153,40 @@ def selectOrMove():
     global positions
     global promoting
     global cursorPos
+    global Lwcastle
+    global Rwcastle
+    global LwRMoved
+    global RwRMoved
+    global wKMoved
+    global Lbcastle
+    global Rbcastle
+    global bKMoved
+    global LbRMoved
+    global RbRMoved
+
     if board[cursorPos[0]][cursorPos[1]][0] == turn:
         selectedPos = cursorPos.copy()
         positions = []
         #===Rook===#
-        if board[cursorPos[0]][cursorPos[1]][1] == 'R': #selected piece 
-            movementsRaycast(1,0,8) #right
-            movementsRaycast(0,1,8) #up
-            movementsRaycast(-1,0,8) #left
-            movementsRaycast(0,-1,8) #down
+        if board[cursorPos[0]][cursorPos[1]][1] == 'R': #selected piece
+            movementsRaycast(1,0,8) #up
+            movementsRaycast(0,1,8) #right
+            movementsRaycast(-1,0,8) #down
+            movementsRaycast(0,-1,8) #left
+            if turn == "b":
+                if RbRMoved == False and not board[0][7] == "bR":
+                    print(RbRMoved)
+                    RbRMoved = True
+                    print(RbRMoved)
+                if LbRMoved == False and not board[0][0] == "bR":
+                    LbRMoved == True
+
+            if turn == "w":
+                if RwRMoved == False and not board[7][7] == "wR":
+                    RwRMoved = True
+                if LwRMoved == False and not board[7][0] == "wR":
+                    LwRMoved = True
+
         #===Bishop===#
         if board[cursorPos[0]][cursorPos[1]][1] == 'B':
             movementsRaycast(1,1,8)
@@ -178,6 +213,7 @@ def selectOrMove():
             movementsRaycast(2,-1,2)
             movementsRaycast(-2,-1,2)
             movementsRaycast(-2,1,2)
+
         #===King===#
         if board[cursorPos[0]][cursorPos[1]][1] == 'K':
             movementsRaycast(1,1,2)
@@ -188,6 +224,30 @@ def selectOrMove():
             movementsRaycast(0,-1,2)
             movementsRaycast(1,0,2)
             movementsRaycast(-1,0,2)
+            if turn == "b":
+                print(selectedPos[1])
+                if bKMoved == False and not selectedPos[0] == 0 and not selectedPos[1] == 4:
+                    bKMoved = True
+                if board[0][6] == "-" and board[0][5] == "-" and bKMoved == False and RbRMoved == False and board[0][7] == "bR":
+                    Rbcastle = True
+                    movementsRaycast(0,1,3)
+                if (board[0][1] == "-" and board[0][2] == "-" and board[0][3] == "-") and (bKMoved == False and LbRMoved == False) and board[0][0] == "bR":
+                    Lbcastle = True
+                    movementsRaycast(0,-1,3)
+            if turn == "w":
+                if wKMoved == False and not selectedPos[0] == 7 and not selectedPos[1] == 4:
+                    wKMoved = True
+                if (board[7][6] == "-" and board[7][5] == "-") and (wKMoved == False and RwRMoved == False) and board[7][7] == "wR":
+                    Rwcastle = True
+                    movementsRaycast(0,1,3)
+                if (board[7][1] == "-" and board[7][2] == "-" and board[7][3] == "-") and (wKMoved == False and RwRMoved == False) and board[7][0] == "wR":
+                    Lwcastle = True
+                    movementsRaycast(0,-1,3)
+                
+                
+      
+
+
         #===Pawn===#
         if board[cursorPos[0]][cursorPos[1]][1] == 'P':
             if turn == 'w': direction = -1
@@ -246,7 +306,7 @@ def render(board):
     global LUT
     
     if promoting == False:
-        clearScreen()
+        # clearScreen()
         if turn == "b":
             print(color("      Black     ","red"))
         else:
