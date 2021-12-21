@@ -7,6 +7,7 @@ import time
 cursorPos = [4,4]
 selectedPos = [-1,-1]
 movablePos = [-1,-1]
+pposition = [-1,-1]
 turn = 'w'
 positions = []
 promoting = False
@@ -163,6 +164,7 @@ def selectOrMove():
     global bKMoved
     global LbRMoved
     global RbRMoved
+    global pposition
 
     if board[cursorPos[0]][cursorPos[1]][0] == turn:
         selectedPos = cursorPos.copy()
@@ -224,12 +226,6 @@ def selectOrMove():
             movementsRaycast(-1,0,2)
 
             if turn == "b":
-                # if Rbcastle and board[0][6] == "bK":
-                #     board[0][5] = "bR"
-                #     board[0][7] = "-"
-                # if Lbcastle and board[0][2] == "bK":
-                #     board[0][3] = "bR"
-                #     board[0][0] = "-"
                 if bKMoved == False and not selectedPos[0] == 0 and not selectedPos[1] == 4:
                     bKMoved = True
                 if Rbcastle == False and board[0][6] == "-" and board[0][5] == "-" and bKMoved == False and RbRMoved == False and board[0][7] == "bR":
@@ -254,7 +250,6 @@ def selectOrMove():
             elif turn == 'b': direction = 1
             if board[selectedPos[0]+direction][selectedPos[1]][0] == '-': # can move one
                 positions.append([selectedPos[0]+direction,selectedPos[1]])
-        
             if selectedPos[0] == 6 and board[4][selectedPos[1]][0] == '-' and board[5][selectedPos[1]][0] == '-' and board[cursorPos[0]][cursorPos[1]][0] == 'w': # can move two (white)
                 positions.append([4,selectedPos[1]])
             if selectedPos[0] == 1 and board[3][selectedPos[1]][0] == '-' and board[2][selectedPos[1]][0] == '-'and board[cursorPos[0]][cursorPos[1]][0] == 'b': # can move two (black)
@@ -265,6 +260,17 @@ def selectOrMove():
             if selectedPos[0]-1 <= 7 and selectedPos[0]-1 >= 0 and selectedPos[1]-1 <= 7 and selectedPos[1]-1 >= 0:
                 if board[selectedPos[0]+direction][selectedPos[1]-1][0] == opositeTurn(turn): # can eat left
                     positions.append([selectedPos[0]+direction,selectedPos[1]-1])
+            if turn == "b":
+                print("b",pposition[0],pposition[1],cursorPos)
+                if pposition[0] ==  6 and cursorPos[0] == 4:
+                    print(pposition[0]-1,pposition[1])
+                    positions.append(pposition[0]-1,pposition[1])
+            # if turn == "w":
+            #     print("w",pposition[0]+1,pposition[1],cursorPos)
+            #     if pposition[0]+1 ==  3 and cursorPos[0] == 4:
+            #         print("zuuu")
+            #         positions.append(pposition[0]+1,pposition[1])
+            pposition = selectedPos.copy()
                 
     elif selectedPos != [-1,-1]:
         print(selectedPos,cursorPos)
