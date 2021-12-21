@@ -261,16 +261,14 @@ def selectOrMove():
                 if board[selectedPos[0]+direction][selectedPos[1]-1][0] == opositeTurn(turn): # can eat left
                     positions.append([selectedPos[0]+direction,selectedPos[1]-1])
             if turn == "b":
-                print("b",pposition[0],pposition[1],cursorPos)
                 if pposition[0] ==  6 and cursorPos[0] == 4:
-                    print(pposition[0]-1,pposition[1])
                     positions.append([pposition[0]-1,pposition[1]])
                     
-            # if turn == "w":
-            #     print("w",pposition[0]+1,pposition[1],cursorPos)
-            #     if pposition[0]+1 ==  3 and cursorPos[0] == 4:
-            #         print("zuuu")
-            #         positions.append(pposition[0]+1,pposition[1])
+            if turn == "w":
+                print("w",pposition[0]+1,pposition[1],cursorPos)
+                if pposition[0]+1 ==  3 and cursorPos[0] == 4:
+                    print("zuuu")
+                    positions.append(pposition[0]+1,pposition[1])
             pposition = selectedPos.copy()
                 
     elif selectedPos != [-1,-1]:
