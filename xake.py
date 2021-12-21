@@ -264,7 +264,8 @@ def selectOrMove():
                 print("b",pposition[0],pposition[1],cursorPos)
                 if pposition[0] ==  6 and cursorPos[0] == 4:
                     print(pposition[0]-1,pposition[1])
-                    positions.append(pposition[0]-1,pposition[1])
+                    positions.append([pposition[0]-1,pposition[1]])
+                    
             # if turn == "w":
             #     print("w",pposition[0]+1,pposition[1],cursorPos)
             #     if pposition[0]+1 ==  3 and cursorPos[0] == 4:
@@ -312,6 +313,7 @@ def render(board):
     global LUT
     global Rbcastle
     global Lwcastle
+    global pposition
     
     if promoting == False:
         # clearScreen()
@@ -328,6 +330,8 @@ def render(board):
                 if Lbcastle and board[0][2] == "bK":
                     board[0][3] = "bR"
                     board[0][0] = "-"
+                if selectedPos == pposition:
+                    board[4][pposition[1]] = "-"
                 if i == cursorPos[0] and j == cursorPos[1]:
                     item = color(item, 'orange') # Cursor
                 if selectedPos != [-1,-1] and [i,j] in positions:
