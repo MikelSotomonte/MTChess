@@ -21,6 +21,8 @@ Rbcastle = False
 LbRMoved = False
 RbRMoved = False
 bKMoved = False
+bstep = False
+wstep = False
 LUT = {
     'bP': '♙ ',
     'bN': '♘ ',
@@ -45,14 +47,16 @@ LUT = {
 #          ['wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP'],
 #          ['wR', 'wN', 'wB', 'wQ', 'wK', 'wB', 'wN', 'wR']]
 
-board = [['bR', '-', '-', '-', 'bK', '-', '-', 'bR'],
+board = [['bR', 'bN', 'bB', 'bQ', 'bK', 'bB', 'bN', 'bR'],
          ['bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP'],
          ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
-         ['-',  '-',   '-',  '-',  'wP',  '-',  '-',  '-'],
-         ['-',  '-',  '-',  '-',   '-',  '-',  '-',  '-'],
+         ['-',  '-',   'bP',  '-',  '-',  '-',  '-',  '-' ],
+         ['-',  '-',  '-',  '-',   'wP',  '-',  '-',  '-' ],
          ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
          ['wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP'],
          ['wR', 'wN', 'wB', 'wQ', 'wK', 'wB', 'wN', 'wR']]
+
+
 
 def keyInput(key):
     global selectedPos
@@ -165,8 +169,11 @@ def selectOrMove():
     global LbRMoved
     global RbRMoved
     global pposition
+    global bstep
+    global wstep
 
     if board[cursorPos[0]][cursorPos[1]][0] == turn:
+        
         selectedPos = cursorPos.copy()
         positions = []
         #===Rook===#
@@ -261,18 +268,29 @@ def selectOrMove():
                 if board[selectedPos[0]+direction][selectedPos[1]-1][0] == opositeTurn(turn): # can eat left
                     positions.append([selectedPos[0]+direction,selectedPos[1]-1])
             if turn == "b":
-                if pposition[0] ==  6 and cursorPos[0] == 4:
+
+
+                if pposition[0] ==  6 and cursorPos[0] == 4 and selectedPos[0] :
                     positions.append([pposition[0]-1,pposition[1]])
+                    wstep = True
                     
+
             if turn == "w":
-                print("w",pposition[0]+1,pposition[1],cursorPos)
-                if pposition[0]+1 ==  3 and cursorPos[0] == 4:
-                    print("zuuu")
-                    positions.append(pposition[0]+1,pposition[1])
+                print(selectedPos,cursorPos,pposition)
+                if pposition[0] ==  1 and cursorPos[0] == 3:
+                    print("1")
+                    positions.append([pposition[0]+1,pposition[1]])
+                    bstep = True
+
             pposition = selectedPos.copy()
                 
     elif selectedPos != [-1,-1]:
-        print(selectedPos,cursorPos)
+        if bstep and selectedPos[0] == cursorPos[0]+1 and selectedPos[1] and cursorPos[1]-1:
+            board[cursorPos[0]+1][cursorPos[1]] = "-"
+            bstep = False
+        if wstep and selectedPos[0] == cursorPos[0]-1 and selectedPos[1] and cursorPos[1]+1:
+            board[cursorPos[0]-1][cursorPos[1]] = "-"
+            wstep = False
         if [cursorPos[0],cursorPos[1]] in positions:
             if (cursorPos[0] == 0 or cursorPos[0] == 7) and board[selectedPos[0]][selectedPos[1]] == turn + 'P': # promote
                 board[selectedPos[0]][selectedPos[1]] = '-'
@@ -312,6 +330,7 @@ def render(board):
     global Rbcastle
     global Lwcastle
     global pposition
+    global bstep
     
     if promoting == False:
         # clearScreen()
@@ -319,17 +338,25 @@ def render(board):
             print(color("      Black     ","red"))
         else:
             print(color("      White     ","red"))
+            
+        if Rbcastle and board[0][6] == "bK":#castle
+            board[0][5] = "bR"
+            board[0][7] = "-"
+        if Lbcastle and board[0][2] == "bK":
+            board[0][3] = "bR"
+            board[0][0] = "-"
+        if Rwcastle and board[7][6] == "wK":
+            board[7][5] = "bR"
+            board[7][7] = "-"
+        if Lwcastle and board[7][2] == "wK":
+            board[7][3] = "bR"
+            board[7][0] = "-"
+
+
+
         for i in range(8):
             for j in range(8):
                 item = LUT[board[i][j]]
-                if Rbcastle and board[0][6] == "bK":
-                    board[0][5] = "bR"
-                    board[0][7] = "-"
-                if Lbcastle and board[0][2] == "bK":
-                    board[0][3] = "bR"
-                    board[0][0] = "-"
-                if selectedPos == pposition:
-                    board[4][pposition[1]] = "-"
                 if i == cursorPos[0] and j == cursorPos[1]:
                     item = color(item, 'orange') # Cursor
                 if selectedPos != [-1,-1] and [i,j] in positions:
@@ -347,6 +374,7 @@ def render(board):
                     item = color(item, 'white')
                 print(item,end='')
             print()
+        
         # print(positions)
 
 with Listener(on_press=onPress) as l:
