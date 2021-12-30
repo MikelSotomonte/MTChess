@@ -1,6 +1,18 @@
-#input
 from typing import get_origin
-from pynput.keyboard import Listener
+try:
+    from pynput.keyboard import Listener
+except:
+    print("Pynput libreria ez dago instalatuta. Enter sakatu instalatzen saiatzeko.")
+    input()
+    try:
+        import subprocess
+        import sys
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "pynput"])
+        print("libreria instalatu da, mesedez programa berrireki. Enter sakatu programa ixteko.")
+        input()
+        exit()
+    except: 
+        print("Ez da libreria instalatu, pynput manualki instalatu beharko duzu. Pip erabiltzea gomendatzen dizugu.")
 import random
 import os
 import time
@@ -24,6 +36,7 @@ RbRMoved = False
 bKMoved = False
 bstep = False
 wstep = False
+
 LUT = {
     'bP': '♙ ',
     'bN': '♘ ',
@@ -39,11 +52,12 @@ LUT = {
     'wK': '♚ ',
     '-': '  '
 }
+
 board = [['bR', 'bN', 'bB', 'bQ', 'bK', 'bB', 'bN', 'bR'],
          ['bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP'],
          ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
-         ['-',  '-',   '-',  '-',  '-',  '-',  '-',  '-' ],
-         ['-',  '-',  '-',  '-',   '-',  '-',  '-',  '-' ],
+         ['-',  '-',   '-',  '-',  '-',  '-',  '-',  '-'],
+         ['-',  '-',  '-',  '-',   '-',  '-',  '-',  '-'],
          ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
          ['wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP'],
          ['wR', 'wN', 'wB', 'wQ', 'wK', 'wB', 'wN', 'wR']]
@@ -58,12 +72,15 @@ def keyInput(key):
         elif key == key.right and cursorPos[1] != 7: cursorPos[1] += 1
         elif (key == key.enter or key == key.space) and (cursorPos == selectedPos) or key == key.esc: selectedPos = [-1,-1] #deselect
         elif key == key.enter or key == key.space: selectOrMove()
+        
     except: 
         pass
+
 def onPress(key):
     global promoting
     if promoting:
         promotePawn(key)
+
     else:
         keyInput(key)
         render(board) 
@@ -72,12 +89,15 @@ def clearScreen():
     time.sleep(0.05)
     if os.name == 'nt':
         os.system('cls')
+
     else:
         os.system('clear')
 
 def opositeTurn(turn):
-    if turn == 'w': turn = 'b'
-    else: turn = 'w'
+    if turn == 'w': 
+        turn = 'b'
+    else: 
+        turn = 'w'
     return turn
 
 def movementsRaycast(x,y,rango):
@@ -87,10 +107,13 @@ def movementsRaycast(x,y,rango):
     
     for i in range(1, rango, 1):
         if selectedPos[0]+i*x <= 7 and selectedPos[0]+i*x >= 0 and selectedPos[1]+i*y <= 7 and selectedPos[1]+i*y >= 0:
+
             if board[selectedPos[0]+i*x][selectedPos[1]+i*y][0] == '-': #spaces
                 positions.append([selectedPos[0]+i*x, selectedPos[1]+i*y])
+                
             elif board[selectedPos[0]+i*x][selectedPos[1]+i*y][0] == turn: #same color pices
                 break
+
             elif board[selectedPos[0]+i*x][selectedPos[1]+i*y][0] == opositeTurn(turn): #other color pices to stop moving after that
                 positions.append([selectedPos[0]+i*x, selectedPos[1]+i*y])
                 break
@@ -102,33 +125,43 @@ def promotePawn(key):
     global promoting
     global board
     global selectedPos
+    
     piceOrder = {
         0: 'Q',
         1: 'R',
         2: 'B',
         3: 'N'
     }
+    clearScreen()
     if key != None:
         if cursorPos[1] < 3 and key == key.right: 
             cursorPos[1] += 1
+            
         elif cursorPos[1] > 0 and key == key.left: 
             cursorPos[1] -= 1  
+            
     print('Select pice to promote to:\n    ╔═══╦═══╦═══╦═══╗\n', end='')
     if cursorPos[1] == 0:
         printable = '║ {}║ {}║ {}║ {}║'.format(color(LUT[turn + 'Q'],'green'), LUT[turn + 'R'], LUT[turn + 'B'], LUT[turn + 'N'])
+        
     if cursorPos[1] == 1:
         printable = '║ {}║ {}║ {}║ {}║'.format(LUT[turn + 'Q'], color(LUT[turn + 'R'],'green'), LUT[turn + 'B'], LUT[turn + 'N'])
+
     if cursorPos[1] == 2:
         printable = '║ {}║ {}║ {}║ {}║'.format(LUT[turn + 'Q'], LUT[turn + 'R'], color(LUT[turn + 'B'],'green'), LUT[turn + 'N'])
+
     if cursorPos[1] == 3:
         printable = '║ {}║ {}║ {}║ {}║'.format(LUT[turn + 'Q'], LUT[turn + 'R'], LUT[turn + 'B'], color(LUT[turn + 'N'],'green'))
+
     print('    ' + printable)
     print('    ╚═══╩═══╩═══╩═══╝')
     if key == key.enter or key == key.space:
         if turn == 'w':
             board[0][selectedPos[1]] = turn + piceOrder[cursorPos[1]]
+
         if turn == 'b':
             board[7][selectedPos[1]] = turn + piceOrder[cursorPos[1]]
+
         promoting = False
         turn = opositeTurn(turn)
         cursorPos = selectedPos
@@ -167,15 +200,18 @@ def selectOrMove():
             movementsRaycast(0,1,8) #right
             movementsRaycast(-1,0,8) #down
             movementsRaycast(0,-1,8) #left
+
             if turn == "b":
                 if RbRMoved == False and not board[0][7] == "bR":
                     RbRMoved = True
+
                 if LbRMoved == False and not board[0][0] == "bR":
                     LbRMoved == True
 
             if turn == "w":
                 if RwRMoved == False and not board[7][7] == "wR":
                     RwRMoved = True
+
                 if LwRMoved == False and not board[7][0] == "wR":
                     LwRMoved = True
 
@@ -185,6 +221,7 @@ def selectOrMove():
             movementsRaycast(-1,1,8)
             movementsRaycast(1,-1,8)
             movementsRaycast(-1,-1,8)
+
         #===Qween===#
         if board[cursorPos[0]][cursorPos[1]][1] == 'Q':
             movementsRaycast(1,1,8)
@@ -195,6 +232,7 @@ def selectOrMove():
             movementsRaycast(0,1,8)
             movementsRaycast(-1,0,8)
             movementsRaycast(0,-1,8)
+
         #===kNight===#
         if board[cursorPos[0]][cursorPos[1]][1] == 'N':
             movementsRaycast(1,2,2)
@@ -220,42 +258,57 @@ def selectOrMove():
             if turn == "b":
                 if bKMoved == False and not selectedPos[0] == 0 and not selectedPos[1] == 4:
                     bKMoved = True
+
                 if Rbcastle == False and board[0][6] == "-" and board[0][5] == "-" and bKMoved == False and RbRMoved == False and board[0][7] == "bR":
                     Rbcastle = True
                     movementsRaycast(0,1,3)
+
                 if Lbcastle == False and (board[0][1] == "-" and board[0][2] == "-" and board[0][3] == "-") and (bKMoved == False and LbRMoved == False) and board[0][0] == "bR":
                     Lbcastle = True
                     movementsRaycast(0,-1,3)
+
             if turn == "w":
                 if wKMoved == False and not selectedPos[0] == 7 and not selectedPos[1] == 4:
                     wKMoved = True
+
                 if Rwcastle == False and (board[7][6] == "-" and board[7][5] == "-") and (wKMoved == False and RwRMoved == False) and board[7][7] == "wR":
                     Rwcastle = True
                     movementsRaycast(0,1,3)
+
                 if Lwcastle == False and (board[7][1] == "-" and board[7][2] == "-" and board[7][3] == "-") and (wKMoved == False and RwRMoved == False) and board[7][0] == "wR":
                     Lwcastle = True
                     movementsRaycast(0,-1,3)
                 
         #===Pawn===#
         if board[cursorPos[0]][cursorPos[1]][1] == 'P':
-            if turn == 'w': direction = -1
-            elif turn == 'b': direction = 1
+            if turn == 'w': 
+                direction = -1
+
+            elif turn == 'b': 
+                direction = 1
+
             if board[selectedPos[0]+direction][selectedPos[1]][0] == '-': # can move one
                 positions.append([selectedPos[0]+direction,selectedPos[1]])
+
             if selectedPos[0] == 6 and board[4][selectedPos[1]][0] == '-' and board[5][selectedPos[1]][0] == '-' and board[cursorPos[0]][cursorPos[1]][0] == 'w': # can move two (white)
                 positions.append([4,selectedPos[1]])
+
             if selectedPos[0] == 1 and board[3][selectedPos[1]][0] == '-' and board[2][selectedPos[1]][0] == '-'and board[cursorPos[0]][cursorPos[1]][0] == 'b': # can move two (black)
                 positions.append([3,selectedPos[1]])
+
             if selectedPos[0]+1 <= 7 and selectedPos[0]+1 >= 0 and selectedPos[1]+1 <= 7 and selectedPos[1]+1 >= 0:
                 if board[selectedPos[0]+direction][selectedPos[1]+1][0] == opositeTurn(turn): # can eat right
                     positions.append([selectedPos[0]+direction,selectedPos[1]+1])
+
             if selectedPos[0]-1 <= 7 and selectedPos[0]-1 >= 0 and selectedPos[1]-1 <= 7 and selectedPos[1]-1 >= 0:
                 if board[selectedPos[0]+direction][selectedPos[1]-1][0] == opositeTurn(turn): # can eat left
                     positions.append([selectedPos[0]+direction,selectedPos[1]-1])
+
             if turn == "b":
                 if pposition[0] ==  6 and cursorPos[0] == 4 and (pposition[1] == selectedPos[1]-1 or pposition[1] == selectedPos[1]+1):
                     positions.append([pposition[0]-1,pposition[1]])
                     wstep = True
+
             if turn == "w":
                 if pposition[0] ==  1 and cursorPos[0] == 3 and (pposition[1] == selectedPos[1]-1 or pposition[1] == selectedPos[1]+1):
                     positions.append([pposition[0]+1,pposition[1]])
@@ -267,9 +320,11 @@ def selectOrMove():
         if bstep and selectedPos[0] == cursorPos[0]+1 and selectedPos[1] and cursorPos[1]-1:
             board[cursorPos[0]+1][cursorPos[1]] = "-"
             bstep = False
+
         if wstep and selectedPos[0] == cursorPos[0]-1 and selectedPos[1] and cursorPos[1]+1:
             board[cursorPos[0]-1][cursorPos[1]] = "-"
             wstep = False
+
         if [cursorPos[0],cursorPos[1]] in positions:
             if (cursorPos[0] == 0 or cursorPos[0] == 7) and board[selectedPos[0]][selectedPos[1]] == turn + 'P': # promote
                 board[selectedPos[0]][selectedPos[1]] = '-'
@@ -277,22 +332,28 @@ def selectOrMove():
                 selectedPos = cursorPos.copy()
                 cursorPos[1] = 0
                 promotePawn(None)
+
             else:
                 board[cursorPos[0]][cursorPos[1]] = board[selectedPos[0]][selectedPos[1]]
                 board[selectedPos[0]][selectedPos[1]] = '-'
                 turn = opositeTurn(turn)
+
         if Rbcastle and board[0][6] == "bK":#castle
             board[0][5] = "bR"
             board[0][7] = "-"
+
         if Lbcastle and board[0][2] == "bK":
             board[0][3] = "bR"
             board[0][0] = "-"
+
         if Rwcastle and board[7][6] == "wK":
-            board[7][5] = "bR"
+            board[7][5] = "wR"
             board[7][7] = "-"
+
         if Lwcastle and board[7][2] == "wK":
-            board[7][3] = "bR"
+            board[7][3] = "wR"
             board[7][0] = "-"
+
         if not promoting: 
             selectedPos = [-1,-1]        
 
@@ -300,20 +361,28 @@ def color(string, color=''): #set colors
         #https://stackabuse.com/how-to-print-colored-text-in-python/
     if color == 'white':
         string = '\u001b[48;5;244m' + string + '\u001b[0m'
+
     elif color == 'green':
         string = '\u001b[48;5;2m' + string + '\u001b[0m'
+
     elif color == 'orange':
         string = '\u001b[48;5;166m' + string + '\u001b[0m'
+
     elif color == 'yellow':
         string = '\u001b[48;5;3m' + string + '\u001b[0m'
+
     elif color == 'darkMove':
         string = '\u001b[48;5;65m' + string + '\u001b[0m'
+
     elif color == 'lightMove':
-        string = '\u001b[48;5;101m' + string + '\u001b[0m'    
+        string = '\u001b[48;5;101m' + string + '\u001b[0m' 
+
     elif color == 'red':
         string = '\u001b[48;5;196m' + string + '\u001b[0m'
+
     elif color == 'blue':
         string = '\u001b[48;5;21m' + string + '\u001b[0m'
+
     return string
 
 def render(board):
@@ -329,37 +398,39 @@ def render(board):
         clearScreen()
         if turn == "b":
             print(color("      Black     ","blue"))
+
         else:
             print(color("      White     ","blue"))
             
-
-
-
         for i in range(8):
             for j in range(8):
                 item = LUT[board[i][j]]
                 if i == cursorPos[0] and j == cursorPos[1]:
                     item = color(item, 'orange') # Cursor
+
                 if selectedPos != [-1,-1] and [i,j] in positions:
                     if board[i][j][0] == opositeTurn(turn) or selectedPos == turn:
                         item = color(item, 'red') #Movable
+
                     else:
                         item = color(item, 'lightMove') #Movable
 
                 if i == cursorPos[0] and j == cursorPos[1] and cursorPos == selectedPos:
                     item = color(item, 'yellow') #Selected and cursor in same position
+
                 if i == selectedPos[0] and j == selectedPos[1]:
                     item = color(item, 'green') # selected
 
                 if (i+j) % 2 == 0:
                     item = color(item, 'white')
+
                 if board[i][j] == turn + "K":
                     win = 1
+
                 print(item,end='')
             print()
         
-        if win == 0:
-            
+        if win == 0: #win scene
             clearScreen()
             if opositeTurn(turn) == "w":
                 for i in range(3):
@@ -390,5 +461,3 @@ def render(board):
 
 with Listener(on_press=onPress) as l:
     l.join()
-
-
