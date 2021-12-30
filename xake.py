@@ -1,3 +1,4 @@
+# coding: utf8
 from typing import get_origin
 try:
     from pynput.keyboard import Listener
@@ -8,9 +9,9 @@ except:
         import subprocess
         import sys
         subprocess.check_call([sys.executable, "-m", "pip", "install", "pynput"])
-        print("libreria instalatu da, mesedez programa berrireki. Enter sakatu programa ixteko.")
+        print("Libreria instalatu da. Enter sakatu programa exekutatzeko.")
         input()
-        exit()
+        from pynput.keyboard import Listener
     except: 
         print("Ez da libreria instalatu, pynput manualki instalatu beharko duzu. Pip erabiltzea gomendatzen dizugu.")
 import random
@@ -100,7 +101,7 @@ def opositeTurn(turn):
         turn = 'w'
     return turn
 
-def movementsRaycast(x,y,rango):
+def movementsRaycast(x,y,rango): #know the positons that the piece can move
     global selectedPos
     global turn
     global positions
@@ -338,19 +339,19 @@ def selectOrMove():
                 board[selectedPos[0]][selectedPos[1]] = '-'
                 turn = opositeTurn(turn)
 
-        if Rbcastle and board[0][6] == "bK":#castle
+        if Rbcastle and board[0][6] == "bK": #black castle  short
             board[0][5] = "bR"
             board[0][7] = "-"
 
-        if Lbcastle and board[0][2] == "bK":
+        if Lbcastle and board[0][2] == "bK": #black castle  long
             board[0][3] = "bR"
             board[0][0] = "-"
 
-        if Rwcastle and board[7][6] == "wK":
+        if Rwcastle and board[7][6] == "wK": #white castle  short
             board[7][5] = "wR"
             board[7][7] = "-"
 
-        if Lwcastle and board[7][2] == "wK":
+        if Lwcastle and board[7][2] == "wK": #white castle  short
             board[7][3] = "wR"
             board[7][0] = "-"
 
@@ -390,7 +391,7 @@ def render(board):
     global selectedPos
     global positions
     global LUT
-    win = 0
+    win = True
     
     if promoting == False:
         clearScreen()
@@ -423,12 +424,12 @@ def render(board):
                     item = color(item, 'white')
 
                 if board[i][j] == turn + "K":
-                    win = 1
+                    win = False
 
                 print(item,end='')
             print()
         
-        if win == 0: #win scene
+        if win == True: #win scene
             clearScreen()
             if opositeTurn(turn) == "w":
                 for i in range(3):
@@ -456,6 +457,6 @@ def render(board):
                     print()
                 time.sleep(3)
                 exit()
-
+render(board)
 with Listener(on_press=onPress) as l:
     l.join()
