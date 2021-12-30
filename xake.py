@@ -1,6 +1,7 @@
 #input
 from typing import get_origin
 from pynput.keyboard import Listener
+import random
 import os
 import time
 
@@ -38,7 +39,7 @@ LUT = {
     'wK': '♚ ',
     '-': '  '
 }
-board = [['bR', 'bN', 'bB', 'bQ', 'bK', 'bB', 'bN', 'bR'],
+board = [['bR', 'bN', 'bB', 'bQ', '-', 'bB', 'bN', 'bR'],
          ['bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP'],
          ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
          ['-',  '-',   '-',  '-',  '-',  '-',  '-',  '-' ],
@@ -138,9 +139,7 @@ def promotePawn(key):
     print('    ╚═══╩═══╩═══╩═══╝')
     if key == key.enter or key == key.space:
         if turn == 'w':
-            print(selectedPos)
             board[0][selectedPos[1]] = turn + piceOrder[cursorPos[1]]
-            print(board[0][selectedPos[1]])
         if turn == 'b':
             board[7][selectedPos[1]] = turn + piceOrder[cursorPos[1]]
         promoting = False
@@ -268,16 +267,15 @@ def selectOrMove():
                 if board[selectedPos[0]+direction][selectedPos[1]-1][0] == opositeTurn(turn): # can eat left
                     positions.append([selectedPos[0]+direction,selectedPos[1]-1])
             if turn == "b":
-
-
-                if pposition[0] ==  6 and cursorPos[0] == 4 and selectedPos[0] :
+                print(selectedPos,cursorPos,pposition)
+                if pposition[0] ==  6 and cursorPos[0] == 4 and (pposition[1] == selectedPos[1]-1 or pposition[1] == selectedPos[1]+1):
                     positions.append([pposition[0]-1,pposition[1]])
                     wstep = True
                     
 
             if turn == "w":
                 print(selectedPos,cursorPos,pposition)
-                if pposition[0] ==  1 and cursorPos[0] == 3:
+                if pposition[0] ==  1 and cursorPos[0] == 3 and (pposition[1] == selectedPos[1]-1 or pposition[1] == selectedPos[1]+1):
                     print("1")
                     positions.append([pposition[0]+1,pposition[1]])
                     bstep = True
@@ -320,6 +318,8 @@ def color(string, color=''): #set colors
         string = '\u001b[48;5;101m' + string + '\u001b[0m'    
     elif color == 'red':
         string = '\u001b[48;5;196m' + string + '\u001b[0m'
+    elif color == 'blue':
+        string = '\u001b[48;5;21m' + string + '\u001b[0m'
     return string
 
 def render(board):
@@ -329,15 +329,14 @@ def render(board):
     global LUT
     global Rbcastle
     global Lwcastle
-    global pposition
-    global bstep
+    win = 0
     
     if promoting == False:
         clearScreen()
         if turn == "b":
-            print(color("      Black     ","red"))
+            print(color("      Black     ","blue"))
         else:
-            print(color("      White     ","red"))
+            print(color("      White     ","blue"))
             
         if Rbcastle and board[0][6] == "bK":#castle
             board[0][5] = "bR"
@@ -372,9 +371,40 @@ def render(board):
 
                 if (i+j) % 2 == 0:
                     item = color(item, 'white')
+                if board[i][j] == turn + "K":
+                    win = 1
                 print(item,end='')
             print()
         
+        if win == 0:
+            
+            clearScreen()
+            if opositeTurn(turn) == "w":
+                for i in range(3):
+                    for j in range(6):
+                        print(color("♚ ",random.choice(["white",'darkMove','green','lightMove','orange'])), end = "")
+                    print()
+
+                print(color(" White wins ","blue"))
+                for i in range(3):
+                    for j in range(6):
+                        print(color("♚ ",random.choice(["white",'darkMove','green','lightMove','orange'])), end = "")
+                    print()
+                time.sleep(3)
+                exit()
+
+            if opositeTurn(turn) == "b":
+                for i in range(3):
+                    for j in range(6):
+                        print(color("♔ ",random.choice(["white",'darkMove','green','lightMove','orange'])), end = "")
+                    print()
+                print(color(" Black wins ","blue"))
+                for i in range(3):
+                    for j in range(6):
+                        print(color("♔ ",random.choice(["white",'darkMove','green','lightMove','orange'])), end = "")
+                    print()
+                time.sleep(3)
+                exit()
         # print(positions)
 
 with Listener(on_press=onPress) as l:
