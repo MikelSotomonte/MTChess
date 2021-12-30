@@ -281,7 +281,20 @@ def selectOrMove():
                 board[cursorPos[0]][cursorPos[1]] = board[selectedPos[0]][selectedPos[1]]
                 board[selectedPos[0]][selectedPos[1]] = '-'
                 turn = opositeTurn(turn)
-        if not promoting: selectedPos = [-1,-1]        
+        if Rbcastle and board[0][6] == "bK":#castle
+            board[0][5] = "bR"
+            board[0][7] = "-"
+        if Lbcastle and board[0][2] == "bK":
+            board[0][3] = "bR"
+            board[0][0] = "-"
+        if Rwcastle and board[7][6] == "wK":
+            board[7][5] = "bR"
+            board[7][7] = "-"
+        if Lwcastle and board[7][2] == "wK":
+            board[7][3] = "bR"
+            board[7][0] = "-"
+        if not promoting: 
+            selectedPos = [-1,-1]        
 
 def color(string, color=''): #set colors
         #https://stackabuse.com/how-to-print-colored-text-in-python/
@@ -319,18 +332,6 @@ def render(board):
         else:
             print(color("      White     ","blue"))
             
-        if Rbcastle and board[0][6] == "bK":#castle
-            board[0][5] = "bR"
-            board[0][7] = "-"
-        if Lbcastle and board[0][2] == "bK":
-            board[0][3] = "bR"
-            board[0][0] = "-"
-        if Rwcastle and board[7][6] == "wK":
-            board[7][5] = "bR"
-            board[7][7] = "-"
-        if Lwcastle and board[7][2] == "wK":
-            board[7][3] = "bR"
-            board[7][0] = "-"
 
 
 
