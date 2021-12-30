@@ -39,7 +39,7 @@ LUT = {
     'wK': '♚ ',
     '-': '  '
 }
-board = [['bR', 'bN', 'bB', 'bQ', '-', 'bB', 'bN', 'bR'],
+board = [['bR', 'bN', 'bB', 'bQ', 'bK', 'bB', 'bN', 'bR'],
          ['bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP'],
          ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
          ['-',  '-',   '-',  '-',  '-',  '-',  '-',  '-' ],
@@ -47,17 +47,6 @@ board = [['bR', 'bN', 'bB', 'bQ', '-', 'bB', 'bN', 'bR'],
          ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
          ['wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP'],
          ['wR', 'wN', 'wB', 'wQ', 'wK', 'wB', 'wN', 'wR']]
-
-# board = [['bR', 'bN', 'bB', 'bQ', 'bK', 'bB', 'bN', 'bR'],
-#          ['bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP'],
-#          ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
-#          ['-',  '-',   'bP',  '-',  '-',  '-',  '-',  '-' ],
-#          ['-',  '-',  '-',  '-',   'wP',  '-',  '-',  '-' ],
-#          ['-',  '-',  '-',  '-',  '-',  '-',  '-',  '-' ],
-#          ['wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP'],
-#          ['wR', 'wN', 'wB', 'wQ', 'wK', 'wB', 'wN', 'wR']]
-
-
 
 def keyInput(key):
     global selectedPos
@@ -77,7 +66,7 @@ def onPress(key):
         promotePawn(key)
     else:
         keyInput(key)
-        render(board)
+        render(board) 
 
 def clearScreen():
     time.sleep(0.05)
@@ -124,8 +113,6 @@ def promotePawn(key):
             cursorPos[1] += 1
         elif cursorPos[1] > 0 and key == key.left: 
             cursorPos[1] -= 1  
-    # clearScreen()
-    print(cursorPos)
     print('Select pice to promote to:\n    ╔═══╦═══╦═══╦═══╗\n', end='')
     if cursorPos[1] == 0:
         printable = '║ {}║ {}║ {}║ {}║'.format(color(LUT[turn + 'Q'],'green'), LUT[turn + 'R'], LUT[turn + 'B'], LUT[turn + 'N'])
@@ -148,7 +135,6 @@ def promotePawn(key):
         selectedPos = [-1,-1]
         render(board)
         return 0
-    #time.sleep(3)
 
 def selectOrMove():
     global selectedPos
@@ -267,16 +253,11 @@ def selectOrMove():
                 if board[selectedPos[0]+direction][selectedPos[1]-1][0] == opositeTurn(turn): # can eat left
                     positions.append([selectedPos[0]+direction,selectedPos[1]-1])
             if turn == "b":
-                print(selectedPos,cursorPos,pposition)
                 if pposition[0] ==  6 and cursorPos[0] == 4 and (pposition[1] == selectedPos[1]-1 or pposition[1] == selectedPos[1]+1):
                     positions.append([pposition[0]-1,pposition[1]])
                     wstep = True
-                    
-
             if turn == "w":
-                print(selectedPos,cursorPos,pposition)
                 if pposition[0] ==  1 and cursorPos[0] == 3 and (pposition[1] == selectedPos[1]-1 or pposition[1] == selectedPos[1]+1):
-                    print("1")
                     positions.append([pposition[0]+1,pposition[1]])
                     bstep = True
 
@@ -405,7 +386,6 @@ def render(board):
                     print()
                 time.sleep(3)
                 exit()
-        # print(positions)
 
 with Listener(on_press=onPress) as l:
     l.join()
