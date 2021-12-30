@@ -390,8 +390,6 @@ def render(board):
     global selectedPos
     global positions
     global LUT
-    global Rbcastle
-    global Lwcastle
     win = 0
     
     if promoting == False:
